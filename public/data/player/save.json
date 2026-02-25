@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "lastSaved": "2026-02-25T00:00:00.000Z",
+  "progress": {
+    "campaignProgress": {
+      "map_001": { "unlocked": true,  "stars": 0 },
+      "map_002": { "unlocked": false, "stars": 0 },
+      "map_003": { "unlocked": false, "stars": 0 }
+    },
+    "heroGalleryUnlocks": {
+      "warrior": true,
+      "archer_hero": false
+    },
+    "heroGalleryUpgrades": {
+      "warrior": [],
+      "archer_hero": []
+    },
+    "playerLevel": 1,
+    "xp": 0,
+    "gems": 0
+  }
+}

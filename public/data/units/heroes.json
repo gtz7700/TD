@@ -1,0 +1,28 @@
+{
+  "heroes": [
+    {
+      "id": "warrior",
+      "name": "Iron Warrior",
+      "spriteKey": "hero_warrior",
+      "hitboxWidth": 40,
+      "hitboxHeight": 40,
+      "canPlaceOnPath": true,
+      "baseHP": 300,
+      "baseDamage": 35,
+      "abilityId": "cleave",
+      "unlockCostGems": 0
+    },
+    {
+      "id": "archer_hero",
+      "name": "Swift Archer",
+      "spriteKey": "hero_archer",
+      "hitboxWidth": 36,
+      "hitboxHeight": 36,
+      "canPlaceOnPath": false,
+      "baseHP": 150,
+      "baseDamage": 55,
+      "abilityId": "rapid_shot",
+      "unlockCostGems": 50
+    }
+  ]
+}

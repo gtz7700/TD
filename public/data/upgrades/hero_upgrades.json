@@ -1,0 +1,48 @@
+{
+  "trees": [
+    {
+      "treeId": "tree_warrior_gallery",
+      "target": "hero_gallery",
+      "targetId": "warrior",
+      "nodes": [
+        {
+          "nodeId": "war_hp1",
+          "treeId": "tree_warrior_gallery",
+          "label": "Iron Skin",
+          "description": "Increase Warrior base HP by 100",
+          "cost": 30,
+          "costCurrency": "gems",
+          "prerequisiteNodeIds": [],
+          "statDeltas": { "maxHP": 100 }
+        },
+        {
+          "nodeId": "war_dmg1",
+          "treeId": "tree_warrior_gallery",
+          "label": "Battle Hardened",
+          "description": "Increase Warrior base damage by 15",
+          "cost": 40,
+          "costCurrency": "gems",
+          "prerequisiteNodeIds": ["war_hp1"],
+          "statDeltas": { "damage": 15 }
+        }
+      ]
+    },
+    {
+      "treeId": "tree_archer_hero_gallery",
+      "target": "hero_gallery",
+      "targetId": "archer_hero",
+      "nodes": [
+        {
+          "nodeId": "archero_dmg1",
+          "treeId": "tree_archer_hero_gallery",
+          "label": "Hawk Eye",
+          "description": "Increase Archer base damage by 20",
+          "cost": 35,
+          "costCurrency": "gems",
+          "prerequisiteNodeIds": [],
+          "statDeltas": { "damage": 20 }
+        }
+      ]
+    }
+  ]
+}

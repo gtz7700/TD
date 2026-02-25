@@ -1,0 +1,28 @@
+{
+  "id": "map_002",
+  "name": "Desert Ruins",
+  "backgroundKey": "bg_desert",
+  "spawnNodeId": "n0",
+  "exitNodeId": "n8",
+  "waveFileId": "waves_002",
+  "pathNodes": [
+    { "id": "n0", "x":  30, "y": 200, "nextIds": ["n1"] },
+    { "id": "n1", "x": 150, "y": 200, "nextIds": ["n2"] },
+    { "id": "n2", "x": 150, "y": 466, "nextIds": ["n3a", "n3b"] },
+    { "id": "n3a","x": 250, "y": 350, "nextIds": ["n4"] },
+    { "id": "n3b","x": 250, "y": 580, "nextIds": ["n4"] },
+    { "id": "n4", "x": 350, "y": 466, "nextIds": ["n5"] },
+    { "id": "n5", "x": 350, "y": 730, "nextIds": ["n8"] },
+    { "id": "n8", "x": 420, "y": 730, "nextIds": [] }
+  ],
+  "branches": [
+    { "fromNodeId": "n2", "toNodeIds": ["n3a", "n3b"], "weights": [0.4, 0.6] }
+  ],
+  "slots": [
+    { "id": "slot_1", "rect": { "x":  10, "y": 100, "width": 110, "height": 110 }, "allowOnPath": false },
+    { "id": "slot_2", "rect": { "x": 280, "y": 100, "width": 110, "height": 110 }, "allowOnPath": false },
+    { "id": "slot_3", "rect": { "x":  10, "y": 550, "width": 110, "height": 110 }, "allowOnPath": false },
+    { "id": "slot_4", "rect": { "x": 280, "y": 550, "width": 110, "height": 110 }, "allowOnPath": false },
+    { "id": "slot_p1","rect": { "x": 175, "y": 295, "width":  80, "height":  80 }, "allowOnPath": true  }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "levelId": "map_001",
+  "waves": [
+    {
+      "waveNumber": 1,
+      "preBonusGold": 60,
+      "groups": [
+        {
+          "spawnNodeId": "n0",
+          "delayMs": 0,
+          "entries": [
+            { "enemyId": "regular_goblin", "count": 6, "intervalMs": 1200 }
+          ]
+        }
+      ]
+    },
+    {
+      "waveNumber": 2,
+      "preBonusGold": 40,
+      "groups": [
+        {
+          "spawnNodeId": "n0",
+          "delayMs": 0,
+          "entries": [
+            { "enemyId": "fast_scout",     "count": 3, "intervalMs": 700  },
+            { "enemyId": "regular_goblin", "count": 4, "intervalMs": 1200 }
+          ]
+        }
+      ]
+    },
+    {
+      "waveNumber": 3,
+      "preBonusGold": 50,
+      "groups": [
+        {
+          "spawnNodeId": "n0",
+          "delayMs": 0,
+          "entries": [
+            { "enemyId": "regular_goblin", "count": 5, "intervalMs": 1000 },
+            { "enemyId": "tank_ogre",      "count": 1, "intervalMs": 3000 }
+          ]
+        }
+      ]
+    }
+  ]
+}

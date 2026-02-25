@@ -1,0 +1,65 @@
+{
+  "towers": [
+    {
+      "id": "archer",
+      "name": "Archer Tower",
+      "spriteKey": "tower_archer",
+      "hitboxWidth": 48,
+      "hitboxHeight": 48,
+      "canPlaceOnPath": false,
+      "range": 160,
+      "damage": 20,
+      "fireRateMs": 800,
+      "element": "Physical",
+      "isAoe": false,
+      "cost": 80,
+      "upgradeTreeId": "tree_archer"
+    },
+    {
+      "id": "mage",
+      "name": "Mage Tower",
+      "spriteKey": "tower_mage",
+      "hitboxWidth": 48,
+      "hitboxHeight": 48,
+      "canPlaceOnPath": false,
+      "range": 140,
+      "damage": 45,
+      "fireRateMs": 1800,
+      "element": "Fire",
+      "isAoe": false,
+      "cost": 120,
+      "upgradeTreeId": "tree_mage"
+    },
+    {
+      "id": "catapult",
+      "name": "Catapult",
+      "spriteKey": "tower_catapult",
+      "hitboxWidth": 64,
+      "hitboxHeight": 64,
+      "canPlaceOnPath": false,
+      "range": 200,
+      "damage": 80,
+      "fireRateMs": 3000,
+      "element": "Physical",
+      "isAoe": true,
+      "aoeRadius": 80,
+      "cost": 200,
+      "upgradeTreeId": "tree_catapult"
+    },
+    {
+      "id": "freeze",
+      "name": "Freeze Tower",
+      "spriteKey": "tower_freeze",
+      "hitboxWidth": 48,
+      "hitboxHeight": 48,
+      "canPlaceOnPath": false,
+      "range": 120,
+      "damage": 5,
+      "fireRateMs": 1200,
+      "element": "Ice",
+      "isAoe": false,
+      "cost": 100,
+      "upgradeTreeId": "tree_freeze"
+    }
+  ]
+}

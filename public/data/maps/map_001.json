@@ -1,0 +1,26 @@
+{
+  "id": "map_001",
+  "name": "Forest Pass",
+  "backgroundKey": "bg_forest",
+  "spawnNodeId": "n0",
+  "exitNodeId": "n9",
+  "waveFileId": "waves_001",
+  "pathNodes": [
+    { "id": "n0",  "x":  30, "y": 466, "nextIds": ["n1"] },
+    { "id": "n1",  "x": 150, "y": 466, "nextIds": ["n2a", "n2b"] },
+    { "id": "n2a", "x": 250, "y": 280, "nextIds": ["n3"] },
+    { "id": "n2b", "x": 250, "y": 650, "nextIds": ["n3"] },
+    { "id": "n3",  "x": 360, "y": 466, "nextIds": ["n9"] },
+    { "id": "n9",  "x": 420, "y": 466, "nextIds": [] }
+  ],
+  "branches": [
+    { "fromNodeId": "n1", "toNodeIds": ["n2a", "n2b"], "weights": [0.5, 0.5] }
+  ],
+  "slots": [
+    { "id": "slot_tl",    "rect": { "x":  10, "y":  80, "width": 110, "height": 110 }, "allowOnPath": false },
+    { "id": "slot_tr",    "rect": { "x": 310, "y":  80, "width": 110, "height": 110 }, "allowOnPath": false },
+    { "id": "slot_bl",    "rect": { "x":  10, "y": 742, "width": 110, "height": 110 }, "allowOnPath": false },
+    { "id": "slot_br",    "rect": { "x": 310, "y": 742, "width": 110, "height": 110 }, "allowOnPath": false },
+    { "id": "slot_path1", "rect": { "x": 175, "y": 425, "width":  80, "height":  80 }, "allowOnPath": true  }
+  ]
+}

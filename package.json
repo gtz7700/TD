@@ -1,0 +1,22 @@
+{
+  "name": "td",
+  "version": "1.0.0",
+  "description": "Professional Tower Defense Game",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^25.3.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  },
+  "dependencies": {
+    "phaser": "^3.90.0",
+    "phaser3-rex-plugins": "^1.80.18"
+  }
+}

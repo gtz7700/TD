@@ -1,0 +1,61 @@
+{
+  "levelId": "map_002",
+  "waves": [
+    {
+      "waveNumber": 1,
+      "preBonusGold": 70,
+      "groups": [
+        {
+          "spawnNodeId": "n0",
+          "delayMs": 0,
+          "entries": [
+            { "enemyId": "regular_goblin", "count": 8, "intervalMs": 1000 }
+          ]
+        }
+      ]
+    },
+    {
+      "waveNumber": 2,
+      "preBonusGold": 50,
+      "groups": [
+        {
+          "spawnNodeId": "n0",
+          "delayMs": 0,
+          "entries": [
+            { "enemyId": "fast_scout",     "count": 5, "intervalMs": 600  },
+            { "enemyId": "regular_goblin", "count": 5, "intervalMs": 1000 }
+          ]
+        }
+      ]
+    },
+    {
+      "waveNumber": 3,
+      "preBonusGold": 60,
+      "groups": [
+        {
+          "spawnNodeId": "n0",
+          "delayMs": 0,
+          "entries": [
+            { "enemyId": "fast_scout",  "count": 4, "intervalMs": 700  },
+            { "enemyId": "tank_ogre",   "count": 2, "intervalMs": 2500 }
+          ]
+        }
+      ]
+    },
+    {
+      "waveNumber": 4,
+      "preBonusGold": 80,
+      "groups": [
+        {
+          "spawnNodeId": "n0",
+          "delayMs": 0,
+          "entries": [
+            { "enemyId": "regular_goblin", "count": 6, "intervalMs": 800  },
+            { "enemyId": "fast_scout",     "count": 4, "intervalMs": 600  },
+            { "enemyId": "tank_ogre",      "count": 2, "intervalMs": 2000 }
+          ]
+        }
+      ]
+    }
+  ]
+}

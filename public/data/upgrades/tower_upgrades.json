@@ -1,0 +1,112 @@
+{
+  "trees": [
+    {
+      "treeId": "tree_archer",
+      "target": "tower",
+      "targetId": "archer",
+      "nodes": [
+        {
+          "nodeId": "archer_dmg1",
+          "treeId": "tree_archer",
+          "label": "Sharp Arrows",
+          "description": "Increase arrow damage by 10",
+          "cost": 60,
+          "costCurrency": "gold",
+          "prerequisiteNodeIds": [],
+          "statDeltas": { "damage": 10 }
+        },
+        {
+          "nodeId": "archer_range1",
+          "treeId": "tree_archer",
+          "label": "Eagle Eye",
+          "description": "Increase range by 30",
+          "cost": 70,
+          "costCurrency": "gold",
+          "prerequisiteNodeIds": [],
+          "statDeltas": { "range": 30 }
+        },
+        {
+          "nodeId": "archer_dmg2",
+          "treeId": "tree_archer",
+          "label": "Piercing Arrows",
+          "description": "Increase arrow damage by 20",
+          "cost": 120,
+          "costCurrency": "gold",
+          "prerequisiteNodeIds": ["archer_dmg1"],
+          "statDeltas": { "damage": 20 }
+        }
+      ]
+    },
+    {
+      "treeId": "tree_mage",
+      "target": "tower",
+      "targetId": "mage",
+      "nodes": [
+        {
+          "nodeId": "mage_dmg1",
+          "treeId": "tree_mage",
+          "label": "Arcane Focus",
+          "description": "Increase spell damage by 20",
+          "cost": 90,
+          "costCurrency": "gold",
+          "prerequisiteNodeIds": [],
+          "statDeltas": { "damage": 20 }
+        },
+        {
+          "nodeId": "mage_rate1",
+          "treeId": "tree_mage",
+          "label": "Rapid Cast",
+          "description": "Reduce fire rate by 300ms",
+          "cost": 100,
+          "costCurrency": "gold",
+          "prerequisiteNodeIds": [],
+          "statDeltas": { "fireRateMs": -300 }
+        }
+      ]
+    },
+    {
+      "treeId": "tree_catapult",
+      "target": "tower",
+      "targetId": "catapult",
+      "nodes": [
+        {
+          "nodeId": "cat_dmg1",
+          "treeId": "tree_catapult",
+          "label": "Heavier Boulders",
+          "description": "Increase boulder damage by 40",
+          "cost": 150,
+          "costCurrency": "gold",
+          "prerequisiteNodeIds": [],
+          "statDeltas": { "damage": 40 }
+        },
+        {
+          "nodeId": "cat_aoe1",
+          "treeId": "tree_catapult",
+          "label": "Wide Impact",
+          "description": "Increase AOE radius by 30",
+          "cost": 130,
+          "costCurrency": "gold",
+          "prerequisiteNodeIds": [],
+          "statDeltas": { "aoeRadius": 30 }
+        }
+      ]
+    },
+    {
+      "treeId": "tree_freeze",
+      "target": "tower",
+      "targetId": "freeze",
+      "nodes": [
+        {
+          "nodeId": "freeze_dur1",
+          "treeId": "tree_freeze",
+          "label": "Deep Freeze",
+          "description": "Increase slow duration by 500ms",
+          "cost": 80,
+          "costCurrency": "gold",
+          "prerequisiteNodeIds": [],
+          "statDeltas": {}
+        }
+      ]
+    }
+  ]
+}
