@@ -2,19 +2,21 @@
 
 import Phaser from 'phaser';
 import { ConfirmModal } from '../ui/ConfirmModal';
+import { EventBus } from '../core/EventBus';
+import { Events } from '../types/EventTypes';
 
 export class ConfirmQuitOverlay {
   private readonly modal: ConfirmModal;
 
-  // יצירת מודל אישור יציאה עם מעבר לבחירת רמות
+  // יצירת מודל אישור יציאה עם ניווט דרך EventBus (UIScene מטפל במעבר)
   constructor(scene: Phaser.Scene) {
     this.modal = new ConfirmModal(
       scene,
       'Leave the game?\nYour progress will be lost.',
       'Quit',
       'Stay',
-      () => scene.scene.start('CampaignMapScene'), // יציאה - חזרה למפה
-      () => {},                                     // ביטול - חזרה למשחק
+      () => EventBus.emit(Events.UI_NAVIGATE_REQUEST, { sceneKey: 'CampaignMapScene' }), // יציאה דרך UIScene
+      () => {},  // ביטול - חזרה למשחק
     );
   }
 

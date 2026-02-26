@@ -20,5 +20,6 @@ export interface IWaveDef {
 
 export interface IWaveConfig {
   levelId: string; // מזהה הרמה שאליה משוייכת הקונפיגורציה
+  prepTimeMs?: number; // זמן הכנה לפני גל ראשון (ברירת מחדל: 0)
   waves: IWaveDef[]; // כל הגלים של הרמה בסדר עולה
 }

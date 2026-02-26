@@ -15,9 +15,12 @@ export interface IBranchDef {
 
 export interface ISlotDef {
   id: string;
-  rect: { x: number; y: number; width: number; height: number }; // אזור הנחה כמלבן
-  allowOnPath: boolean; // האם ניתן להניח יחידות מסוג melee על הנתיב
-  label?: string; // תווית אופציונלית לצורכי עיצוב
+  rect: { x: number; y: number; width: number; height: number };
+  allowOnPath: boolean;
+  capacity?: number;   // max units in this slot (default 1)
+  label?: string;
+  rotation?: number;   // clockwise degrees for tilted slots (default 0)
+  exactHitbox?: { x: number; y: number; width: number; height: number }; // tighter area for canPlace checks; falls back to rect
 }
 
 export interface IMapConfig {

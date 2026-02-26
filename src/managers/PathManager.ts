@@ -1,5 +1,6 @@
-// מנהל נתיבים - בחירת מסלול לאויב בלידה (ענפים אקראיים + תשתית לנתיב חכם)
+// Path manager — resolves enemy routes through the map and builds smooth Catmull-Rom spline curves.
 
+import Phaser from 'phaser';
 import { MapManager } from './MapManager';
 import type { IPathNode } from '../types/MapTypes';
 import { weightedRandom } from '../utils/MathUtils';
@@ -7,12 +8,11 @@ import { weightedRandom } from '../utils/MathUtils';
 export class PathManager {
   private readonly mapManager: MapManager;
 
-  // אתחול מנהל הנתיבים עם הפניה למנהל המפה
   constructor(mapManager: MapManager) {
     this.mapManager = mapManager;
   }
 
-  // בחירת מסלול מלא לאויב בלידה - כולל פתרון ענפים אקראיים
+  // Resolve a full route from spawn to exit, choosing branches by weight.
   resolveRoute(spawnNodeId: string): string[] {
     const route: string[] = [spawnNodeId];
     let currentId = spawnNodeId;
@@ -21,7 +21,6 @@ export class PathManager {
       const node = this.mapManager.getNode(currentId);
       if (node.nextIds.length === 0) break;
 
-      // בחירת ענף - לפי משקלות אם קיים, אחרת ראשון
       const branchDef = this.mapManager.config.branches
         .find(b => b.fromNodeId === currentId);
 
@@ -40,12 +39,28 @@ export class PathManager {
     return route;
   }
 
-  // המרת מסלול מזהים לרשימת אובייקטי צומת
+  // Convert a route (array of node IDs) to IPathNode objects.
   routeToNodes(route: string[]): IPathNode[] {
     return route.map(id => this.mapManager.getNode(id));
   }
 
-  // תשתית לאויב חכם: בחירת הנתיב הקצר ביותר (BFS)
+  // Build a piecewise-linear Phaser.Curves.Path from a resolved route.
+  // Uses lineTo segments (NOT splineTo) so enemies stay *strictly* within the line between
+  // every pair of consecutive waypoints — no spline overshoot, no grass-walking.
+  // Arc-length parameterisation in BaseEnemy.update() ensures uniform speed along each segment.
+  buildCurve(route: string[]): Phaser.Curves.Path {
+    const nodes = this.routeToNodes(route);
+    const first = nodes[0];
+    const path = new Phaser.Curves.Path(first.x, first.y);
+
+    for (let i = 1; i < nodes.length; i++) {
+      path.lineTo(nodes[i].x, nodes[i].y);
+    }
+
+    return path;
+  }
+
+  // BFS shortest-route (used as fallback / future smart-enemy feature).
   shortestRoute(spawnNodeId: string): string[] {
     const { exitNodeId } = this.mapManager.config;
     const visited = new Set<string>();
@@ -65,6 +80,6 @@ export class PathManager {
       }
     }
 
-    return this.resolveRoute(spawnNodeId); // fallback
+    return this.resolveRoute(spawnNodeId);
   }
 }

@@ -1,12 +1,14 @@
 // שכבת סיום גל - מוצגת בין גלים עם סיכום תגמולים
 
 import Phaser from 'phaser';
+import { EventBus } from '../core/EventBus';
+import { Events } from '../types/EventTypes';
 
 export class WaveCompleteOverlay extends Phaser.GameObjects.Container {
   private readonly titleText: Phaser.GameObjects.Text;
   private readonly goldText: Phaser.GameObjects.Text;
 
-  // יצירת שכבת סיום גל עם כפתור המשך
+  // יצירת שכבת סיום גל עם כפתור המשך + האזנה אוטומטית לאירועי גל
   constructor(scene: Phaser.Scene) {
     const { width, height } = scene.scale;
     super(scene, 0, 0);
@@ -33,6 +35,9 @@ export class WaveCompleteOverlay extends Phaser.GameObjects.Container {
     this.add([bg, this.titleText, this.goldText, continueBtn, continueText]);
     scene.add.existing(this);
     this.setDepth(130).setVisible(false);
+
+    // האזנה עצמאית לסיום גל - לא תלוי בסצנת האב
+    EventBus.on(Events.WAVE_COMPLETE, (p) => this.show(p.waveNumber, p.goldBonus));
   }
 
   // הצגת תוצאות הגל שהסתיים

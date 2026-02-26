@@ -1,7 +1,7 @@
 // סצנת הטעינה - טוענת את כל נכסי המשחק עם פס התקדמות
 
 import Phaser from 'phaser';
-import { DATA_KEYS } from '../core/AssetManifest';
+import { DATA_KEYS, BG } from '../core/AssetManifest';
 
 export class PreloaderScene extends Phaser.Scene {
   private progressBar!: Phaser.GameObjects.Graphics;
@@ -37,17 +37,52 @@ export class PreloaderScene extends Phaser.Scene {
       this.progressBar.fillRect(cx - 155, cy - 20, 310 * value, 40);
     });
 
-    this.load.on('complete', () => this.scene.start('MainMenuScene'));
+    // מעבר לתפריט עם fade-in לאחר השלמת הטעינה
+    this.load.on('complete', () => {
+      this.cameras.main.fadeOut(200, 0, 0, 0);
+      this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+        this.scene.start('MainMenuScene');
+      });
+    });
+
     this.loadAssets();
   }
 
-  // טעינת כל נכסי המשחק - קבצי JSON בלבד (ישויות משתמשות ב-Rectangle, לא ספרייטים)
+  // טעינת כל נכסי המשחק - תמונות רקע + JSON
   private loadAssets(): void {
-    // כל ישויות המשחק (מגדלים, אויבים, גיבורים, פרויקטילים) ממומשות באמצעות
-    // Phaser.GameObjects.Rectangle — אין צורך בקבצי PNG כרגע.
-    // TODO: הוסף load.image() כאן כאשר ספרייטים אמיתיים יהיו מוכנים.
+    // ─── תמונות רקע למפות ───────────────────────────────────────────────────
+    // level-1-bg.jpg כבר הוצב ידנית ב-public/assets/images/maps/
+    this.load.image(BG.FOREST, 'assets/images/maps/level-1-bg.png');
+    // להוסיף כאן תמונות נוספות בעתיד:
+    // this.load.image(BG.DESERT, 'assets/images/maps/level-2-bg.jpg');
+    // this.load.image(BG.CAVES,  'assets/images/maps/level-3-bg.jpg');
 
-    // --- קבצי JSON ---
+    // ─── ספרייטים של אויבים (להחליף Rectangle כשמוכן) ──────────────────────
+    // this.load.image(ENEMY_SPRITES.GOBLIN, 'assets/images/enemies/goblin.png');
+    // this.load.image(ENEMY_SPRITES.SCOUT,  'assets/images/enemies/scout.png');
+    // this.load.image(ENEMY_SPRITES.OGRE,   'assets/images/enemies/ogre.png');
+
+    // ─── ספרייטים של מגדלים (להחליף Rectangle כשמוכן) ──────────────────────
+    // this.load.image(TOWER_SPRITES.ARCHER,   'assets/images/towers/archer.png');
+    // this.load.image(TOWER_SPRITES.MAGE,     'assets/images/towers/mage.png');
+    // this.load.image(TOWER_SPRITES.CATAPULT, 'assets/images/towers/catapult.png');
+    // this.load.image(TOWER_SPRITES.FREEZE,   'assets/images/towers/freeze.png');
+
+    // ─── ספרייטים של גיבורים ─────────────────────────────────────────────────
+    // this.load.image(HERO_SPRITES.WARRIOR, 'assets/images/heroes/warrior.png');
+    // this.load.image(HERO_SPRITES.ARCHER,  'assets/images/heroes/archer.png');
+
+    // ─── ספרייטים של UI ──────────────────────────────────────────────────────
+    // this.load.image(UI.GOLD_ICON,  'assets/images/ui/gold.png');
+    // this.load.image(UI.GEM_ICON,   'assets/images/ui/gem.png');
+    // this.load.image(UI.HEART_ICON, 'assets/images/ui/heart.png');
+    // this.load.image(UI.STAR_FULL,  'assets/images/ui/star-full.png');
+    // this.load.image(UI.STAR_EMPTY, 'assets/images/ui/star-empty.png');
+
+    // ─── אנימציות כ-Spritesheet (כאשר יהיו מוכנות) ──────────────────────────
+    // this.load.spritesheet('enemy_goblin_anim', 'assets/spritesheets/goblin.png', { frameWidth: 48, frameHeight: 48 });
+
+    // ─── קבצי JSON ───────────────────────────────────────────────────────────
     this.load.json(DATA_KEYS.CAMPAIGN,       'data/maps/campaign.json');
     this.load.json(DATA_KEYS.MAP_001,        'data/maps/map_001.json');
     this.load.json(DATA_KEYS.MAP_002,        'data/maps/map_002.json');

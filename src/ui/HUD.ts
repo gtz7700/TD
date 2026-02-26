@@ -14,11 +14,11 @@ export class HUD {
 
   // אתחול כל רכיבי ה-HUD ורישום האזנה לשינויים
   constructor(scene: Phaser.Scene) {
-    const { width } = scene.scale;
-
-    this.goldDisplay   = new GoldDisplay(scene, 20, 20);
-    this.livesBar      = new LivesBar(scene, width / 2, 20, 40);
-    this.waveIndicator = new WaveIndicator(scene, width - 20, 20);
+    // שלושת פאנלי המידע מוצבים בשורה אחת בפינה שמאלית עליונה
+    // GoldDisplay (130px) | gap 6px | LivesBar (130px) | gap 6px | WaveIndicator (140px)
+    this.goldDisplay   = new GoldDisplay(scene, 10, 5);
+    this.livesBar      = new LivesBar(scene, 148, 5, 40);
+    this.waveIndicator = new WaveIndicator(scene, 286, 5);
 
     // עדכון HUD בשינויי מטבע
     EventBus.on(Events.CURRENCY_CHANGED, (p) => {

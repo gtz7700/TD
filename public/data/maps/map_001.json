@@ -3,24 +3,71 @@
   "name": "Forest Pass",
   "backgroundKey": "bg_forest",
   "spawnNodeId": "n0",
-  "exitNodeId": "n9",
+  "exitNodeId": "exit",
   "waveFileId": "waves_001",
+  "normalized": true,
+
   "pathNodes": [
-    { "id": "n0",  "x":  30, "y": 466, "nextIds": ["n1"] },
-    { "id": "n1",  "x": 150, "y": 466, "nextIds": ["n2a", "n2b"] },
-    { "id": "n2a", "x": 250, "y": 280, "nextIds": ["n3"] },
-    { "id": "n2b", "x": 250, "y": 650, "nextIds": ["n3"] },
-    { "id": "n3",  "x": 360, "y": 466, "nextIds": ["n9"] },
-    { "id": "n9",  "x": 420, "y": 466, "nextIds": [] }
+    { "id": "n0",    "x": 161, "y": 212, "nextIds": ["n1"]         },
+    { "id": "n1",    "x": 230, "y": 235, "nextIds": ["n2"]         },
+    { "id": "n2",    "x": 310, "y": 265, "nextIds": ["n2m"]        },
+    { "id": "n2m",   "x": 350, "y": 303, "nextIds": ["n3"]         },
+    { "id": "n3",    "x": 390, "y": 340, "nextIds": ["n3a"]        },
+    { "id": "n3a",   "x": 408, "y": 388, "nextIds": ["n4"]         },
+    { "id": "n4",    "x": 430, "y": 468, "nextIds": ["na0", "nb1"] },
+
+    { "id": "na0",   "x": 448, "y": 435, "nextIds": ["na1"]        },
+    { "id": "na1",   "x": 460, "y": 400, "nextIds": ["na2"]        },
+    { "id": "na2",   "x": 530, "y": 330, "nextIds": ["na3"]        },
+    { "id": "na3",   "x": 590, "y": 255, "nextIds": ["na4"]        },
+    { "id": "na4",   "x": 680, "y": 245, "nextIds": ["na5"]        },
+    { "id": "na5",   "x": 760, "y": 290, "nextIds": ["na56m"]      },
+    { "id": "na56m", "x": 793, "y": 341, "nextIds": ["na6"]        },
+    { "id": "na6",   "x": 820, "y": 390, "nextIds": ["na7"]        },
+    { "id": "na7",   "x": 800, "y": 540, "nextIds": ["na8"]        },
+    { "id": "na8",   "x": 760, "y": 660, "nextIds": ["na8ex"]      },
+    { "id": "na8ex", "x": 750, "y": 713, "nextIds": ["exit"]       },
+
+    { "id": "nb1",   "x": 400, "y": 560, "nextIds": ["nb12m"]      },
+    { "id": "nb12m", "x": 348, "y": 598, "nextIds": ["nb2"]        },
+    { "id": "nb2",   "x": 300, "y": 640, "nextIds": ["nb23m"]      },
+    { "id": "nb23m", "x": 244, "y": 664, "nextIds": ["nb3"]        },
+    { "id": "nb3",   "x": 190, "y": 685, "nextIds": ["nb4"]        },
+    { "id": "nb4",   "x": 130, "y": 750, "nextIds": ["nb4a"]       },
+    { "id": "nb4a",  "x": 190, "y": 778, "nextIds": ["nb4b"]       },
+    { "id": "nb4b",  "x": 253, "y": 806, "nextIds": ["nb5"]        },
+    { "id": "nb5",   "x": 320, "y": 815, "nextIds": ["nb56a"]      },
+    { "id": "nb56a", "x": 400, "y": 818, "nextIds": ["nb56b"]      },
+    { "id": "nb56b", "x": 490, "y": 820, "nextIds": ["nb6"]        },
+    { "id": "nb6",   "x": 590, "y": 820, "nextIds": ["nb6ex"]      },
+    { "id": "nb6ex", "x": 665, "y": 793, "nextIds": ["exit"]       },
+
+    { "id": "t0",    "x": 379, "y": 512, "nextIds": ["t1"]         },
+    { "id": "t1",    "x": 440, "y": 580, "nextIds": ["t2"]         },
+    { "id": "t2",    "x": 530, "y": 660, "nextIds": ["t23m"]       },
+    { "id": "t23m",  "x": 585, "y": 690, "nextIds": ["t3"]         },
+    { "id": "t3",    "x": 640, "y": 720, "nextIds": ["t3ex"]       },
+    { "id": "t3ex",  "x": 690, "y": 742, "nextIds": ["exit"]       },
+
+    { "id": "exit",  "x": 740, "y": 765, "nextIds": []             }
   ],
+
   "branches": [
-    { "fromNodeId": "n1", "toNodeIds": ["n2a", "n2b"], "weights": [0.5, 0.5] }
+    {
+      "fromNodeId": "n4",
+      "toNodeIds": ["na0", "nb1"],
+      "weights": [0.5, 0.5]
+    }
   ],
+
   "slots": [
-    { "id": "slot_tl",    "rect": { "x":  10, "y":  80, "width": 110, "height": 110 }, "allowOnPath": false },
-    { "id": "slot_tr",    "rect": { "x": 310, "y":  80, "width": 110, "height": 110 }, "allowOnPath": false },
-    { "id": "slot_bl",    "rect": { "x":  10, "y": 742, "width": 110, "height": 110 }, "allowOnPath": false },
-    { "id": "slot_br",    "rect": { "x": 310, "y": 742, "width": 110, "height": 110 }, "allowOnPath": false },
-    { "id": "slot_path1", "rect": { "x": 175, "y": 425, "width":  80, "height":  80 }, "allowOnPath": true  }
+    { "id": "slot_1", "rect": { "x": 214, "y": 313, "width": 100, "height": 70 }, "allowOnPath": false, "capacity": 2 },
+    { "id": "slot_2", "rect": { "x": 549, "y": 182, "width": 80,  "height": 70 }, "allowOnPath": false, "capacity": 1 },
+    { "id": "slot_3", "rect": { "x": 687, "y": 194, "width": 80,  "height": 70 }, "allowOnPath": false, "capacity": 1 },
+    { "id": "slot_4", "rect": { "x": 677, "y": 295, "width": 80,  "height": 70 }, "allowOnPath": false, "capacity": 1 },
+    { "id": "slot_5", "rect": { "x": 599, "y": 287, "width": 80,  "height": 70 }, "allowOnPath": false, "capacity": 1 },
+    { "id": "slot_6", "rect": { "x": 391, "y": 567, "width": 80,  "height": 70 }, "allowOnPath": false, "capacity": 1 },
+    { "id": "slot_7", "rect": { "x":  81, "y": 648, "width": 80,  "height": 70 }, "allowOnPath": false, "capacity": 1 },
+    { "id": "slot_8", "rect": { "x": 605, "y": 771, "width": 80,  "height": 70 }, "allowOnPath": false, "capacity": 1 }
   ]
 }

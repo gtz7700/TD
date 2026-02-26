@@ -8,8 +8,6 @@ import { rectContainsRect, rectsOverlap, hitboxFromCenter } from '../utils/RectU
 import type { ISlotState, PlacedUnit, DragPreviewState, SwapRequest } from '../types/PlacementTypes';
 import type { ITowerDef, IHeroDef } from '../types/UnitTypes';
 
-// היסט Y של תצוגת הגרירה מעל האצבע ביחידות עולם
-const MOBILE_DRAG_Y_OFFSET = -80;
 
 export class PlacementManager {
   private readonly slotStates: Map<string, ISlotState>;
@@ -33,10 +31,11 @@ export class PlacementManager {
     if (!slotState) return false;
 
     const { rect, allowOnPath } = slotState.def;
+    const checkRect = slotState.def.exactHitbox ?? rect;
 
-    // בדיקה 1: תיבת הפגיעה נמצאת לחלוטין בתוך האזור
+    // בדיקה 1: תיבת הפגיעה נמצאת לחלוטין בתוך האזור (exactHitbox מדויק יותר מ-rect)
     const hitbox = hitboxFromCenter(dropX, dropY, def.hitboxWidth, def.hitboxHeight);
-    if (!rectContainsRect(rect, hitbox)) return false;
+    if (!rectContainsRect(checkRect, hitbox)) return false;
 
     // בדיקה 2: canPlaceOnPath - האם מותר על הנתיב
     if (!allowOnPath && def.canPlaceOnPath) return false;
@@ -60,20 +59,17 @@ export class PlacementManager {
     const slotState = this.slotStates.get(slotId);
     if (!slotState) return;
 
-    // יישום היסט Y לפני שמירה
-    const adjustedY = worldY + MOBILE_DRAG_Y_OFFSET;
-
     const placed: PlacedUnit = {
       instanceId,
       unitId: def.id,
       unitType,
       worldX,
-      worldY: adjustedY,
-      hitboxRect: hitboxFromCenter(worldX, adjustedY, def.hitboxWidth, def.hitboxHeight),
+      worldY,
+      hitboxRect: hitboxFromCenter(worldX, worldY, def.hitboxWidth, def.hitboxHeight),
     };
 
     slotState.placedUnits.push(placed);
-    EventBus.emit(Events.UNIT_PLACED, { instanceId, unitId: def.id, unitType, slotId, worldX, worldY: adjustedY });
+    EventBus.emit(Events.UNIT_PLACED, { instanceId, unitId: def.id, unitType, slotId, worldX, worldY });
   }
 
   // הסרת יחידה מאזורה
@@ -108,7 +104,9 @@ export class PlacementManager {
     const hitboxA = hitboxFromCenter(unitB.worldX, unitB.worldY, unitA.hitboxRect.width, unitA.hitboxRect.height);
     const hitboxB = hitboxFromCenter(unitA.worldX, unitA.worldY, unitB.hitboxRect.width, unitB.hitboxRect.height);
 
-    if (!rectContainsRect(stateB.def.rect, hitboxA) || !rectContainsRect(stateA.def.rect, hitboxB)) {
+    const rectA = stateA.def.exactHitbox ?? stateA.def.rect;
+    const rectB = stateB.def.exactHitbox ?? stateB.def.rect;
+    if (!rectContainsRect(rectB, hitboxA) || !rectContainsRect(rectA, hitboxB)) {
       EventBus.emit(Events.SWAP_FAILED, { reason: 'Size constraints violated' });
       return;
     }
@@ -125,5 +123,43 @@ export class PlacementManager {
   // שליפת כל היחידות המונחות כרגע (לשימוש מנהל מגדלים/גיבורים)
   getAllPlacedUnits(): PlacedUnit[] {
     return [...this.slotStates.values()].flatMap(s => s.placedUnits);
+  }
+
+  // Place a unit at the tapped point. Respects slot capacity:
+  // - capacity 1: single unit snapped to slot center
+  // - capacity N: units placed side-by-side at N equally spaced X positions
+  tryPlaceAtPoint(
+    def: ITowerDef | IHeroDef,
+    unitType: 'tower' | 'hero',
+    worldX: number,
+    worldY: number
+  ): boolean {
+    for (const [, state] of this.slotStates) {
+      const { rect, id } = state.def;
+      if (
+        worldX < rect.x || worldX > rect.x + rect.width ||
+        worldY < rect.y || worldY > rect.y + rect.height
+      ) continue;
+
+      const capacity = state.def.capacity ?? 1;
+      const occupied = state.placedUnits.length;
+      if (occupied >= capacity) continue;
+
+      // Divide slot into (capacity + 1) sections; place unit in the next free section
+      const cx = rect.x + rect.width * (occupied + 1) / (capacity + 1);
+      const cy = rect.y + rect.height / 2;
+
+      if (this.canPlace(def, id, cx, cy)) {
+        const instanceId = `${def.id}_${Date.now()}`;
+        this.commitPlacement(instanceId, def, unitType, id, cx, cy);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // שליפת כל ה-slots לצורך ציור ויזואלי
+  getSlotStates(): Map<string, ISlotState> {
+    return this.slotStates;
   }
 }

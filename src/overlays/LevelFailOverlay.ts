@@ -1,39 +1,46 @@
-// שכבת כישלון ברמה - מוצגת כאשר השחקן מאבד את כל חייו
+// Level fail overlay - shown when the player loses all lives
 
 import Phaser from 'phaser';
+import { EventBus } from '../core/EventBus';
+import { Events } from '../types/EventTypes';
 
 export class LevelFailOverlay extends Phaser.GameObjects.Container {
-  // יצירת שכבת כישלון עם אפשרויות ניסיון חוזר או יציאה
   constructor(scene: Phaser.Scene) {
     const { width, height } = scene.scale;
+    const cx = width / 2;
+    const cy = height / 2;
     super(scene, 0, 0);
 
-    scene.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.75);
+    // All objects added to THIS container so setVisible(false) hides everything
+    const bg = scene.add.rectangle(cx, cy, width, height, 0x000000, 0.75)
+      .setInteractive();
 
-    scene.add.text(width / 2, height / 2 - 80, 'DEFEATED', {
+    const title = scene.add.text(cx, cy - 80, 'DEFEATED', {
       fontSize: '44px', fontStyle: 'bold', color: '#ff4444',
     }).setOrigin(0.5);
 
-    // כפתור ניסיון חוזר
-    const retryBtn = scene.add.rectangle(width / 2, height / 2 + 20, 200, 55, 0x1e3a5f)
+    const retryBtn = scene.add.rectangle(cx, cy + 20, 200, 55, 0x1e3a5f)
       .setInteractive({ useHandCursor: true });
-    scene.add.text(width / 2, height / 2 + 20, 'Retry', {
+    const retryTxt = scene.add.text(cx, cy + 20, 'Retry', {
       fontSize: '20px', color: '#fff',
     }).setOrigin(0.5);
-    retryBtn.on('pointerdown', () => scene.scene.restart());
+    retryBtn.on('pointerdown', () => EventBus.emit(Events.GAME_RETRY_REQUESTED, {} as never));
 
-    // כפתור יציאה
-    const quitBtn = scene.add.rectangle(width / 2, height / 2 + 90, 200, 55, 0x3a1a1a)
+    const quitBtn = scene.add.rectangle(cx, cy + 90, 200, 55, 0x3a1a1a)
       .setInteractive({ useHandCursor: true });
-    scene.add.text(width / 2, height / 2 + 90, 'Quit', {
+    const quitTxt = scene.add.text(cx, cy + 90, 'Quit', {
       fontSize: '20px', color: '#fff',
     }).setOrigin(0.5);
-    quitBtn.on('pointerdown', () => scene.scene.start('CampaignMapScene'));
+    quitBtn.on('pointerdown', () =>
+      EventBus.emit(Events.UI_NAVIGATE_REQUEST, { sceneKey: 'CampaignMapScene' })
+    );
 
+    this.add([bg, title, retryBtn, retryTxt, quitBtn, quitTxt]);
     scene.add.existing(this);
     this.setDepth(145).setVisible(false);
+
+    EventBus.on(Events.PLAYER_DEFEATED, () => this.show());
   }
 
-  // הצגת שכבת הכישלון
   show(): void { this.setVisible(true); }
 }

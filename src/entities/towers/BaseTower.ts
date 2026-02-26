@@ -35,6 +35,23 @@ export abstract class BaseTower extends Phaser.GameObjects.Rectangle {
     this.currentRange       = def.range;
     this.currentDamage      = def.damage;
     this.currentFireRateMs  = def.fireRateMs;
+
+    // tap-to-show-range: emit event picked up by GameScene rangeGraphics
+    this.setInteractive();
+    this.on('pointerdown', () => {
+      EventBus.emit(Events.TOWER_CLICKED, {
+        instanceId: this.instanceId,
+        x: this.x,
+        y: this.y,
+        range: this.currentRange,
+      });
+    });
+
+    // white center dot — makes tower look less like a bare block
+    const dot = scene.add.graphics().setDepth(16);
+    dot.fillStyle(0xffffff, 0.7);
+    dot.fillCircle(x, y, 4);
+    this.once('destroy', () => dot.destroy());
   }
 
   // עדכון מסגרתי - מצבר זמן ויורה כשמגיע הזמן

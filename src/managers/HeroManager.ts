@@ -62,4 +62,9 @@ export class HeroManager {
   getHero(instanceId: string): BaseHero | undefined {
     return this.heroes.get(instanceId);
   }
+
+  // שליפת הגדרת גיבור לפי סוג
+  getDef(heroId: string): IHeroDef | undefined {
+    return this.heroDefs.get(heroId);
+  }
 }

@@ -19,8 +19,8 @@ export class CombatManager {
     const enemy = this.enemyManager.getEnemy(event.targetInstanceId);
     if (!enemy) return { shieldAbsorbed: 0, hpDamaged: 0, overkill: 0, enemyDied: false };
 
-    // מכפיל אלמנטלי
-    const multiplier = getDamageMultiplier(event.element, 'Physical'); // TODO: נגזר מ-enemy type
+    // מכפיל אלמנטלי - שימוש בסוג האלמנט של האויב לחישוב נזק מדויק
+    const multiplier = getDamageMultiplier(event.element, enemy.def.element ?? 'None');
     const totalDamage = Math.round(event.rawDamage * multiplier);
 
     // חישוב ספיגת מגן

@@ -1,6 +1,7 @@
 // הגדרות טיפוסים עבור אויבים - הגדרות בסיסיות ומצב רצף
 
 import type { IStatusEffect } from './CombatTypes';
+import type { ElementType } from './UnitTypes';
 
 export type EnemyCategory = 'Regular' | 'Fast' | 'Tank';
 
@@ -16,6 +17,7 @@ export interface IEnemyDef {
   xpReward: number; // נקודות ניסיון עם הריגה
   hitboxWidth: number;
   hitboxHeight: number;
+  element?: ElementType; // סוג אלמנט לחישוב מכפיל נזק - ברירת מחדל None
 }
 
 export interface IEnemyState {

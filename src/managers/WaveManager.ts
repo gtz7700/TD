@@ -27,8 +27,19 @@ export class WaveManager {
     EventBus.on(Events.ENEMY_REACHED_EXIT, () => this.onEnemyRemoved());
   }
 
-  // הפעלת הגל הבא - מעניק זהב בונוס ומתחיל תזמון הולדות
+  // הפעלת הגל הבא - אם זה הגל הראשון, מחכה לזמן ההכנה תחילה
   startNextWave(): void {
+    if (this.currentWaveIndex === 0 && (this.waveConfig.prepTimeMs ?? 0) > 0) {
+      const prepMs = this.waveConfig.prepTimeMs!;
+      EventBus.emit(Events.WAVE_PREP_STARTED, { totalMs: prepMs });
+      this.scene.time.delayedCall(prepMs, () => this.launchWave());
+      return;
+    }
+    this.launchWave();
+  }
+
+  // השקת גל בפועל - מעניק זהב בונוס ומתחיל תזמון הולדות
+  private launchWave(): void {
     if (this.currentWaveIndex >= this.waveConfig.waves.length) {
       EventBus.emit(Events.ALL_WAVES_COMPLETE, { levelId: this.waveConfig.levelId });
       return;
@@ -51,7 +62,7 @@ export class WaveManager {
     this.scheduleWaveSpawns(wave);
   }
 
-  // תזמון הולדת כל הקבוצות בגל
+  // תזמון הולדת כל הקבוצות בגל — נקרא מ-launchWave
   private scheduleWaveSpawns(wave: IWaveDef): void {
     let totalExpected = 0;
 
@@ -59,14 +70,18 @@ export class WaveManager {
       let groupDelay = group.delayMs;
 
       group.entries.forEach(entry => {
+        // accumulate spawn time per enemy with 500–1000 ms random gap
+        let spawnCursor = groupDelay;
         for (let i = 0; i < entry.count; i++) {
-          this.scene.time.delayedCall(groupDelay + i * entry.intervalMs, () => {
+          const t = spawnCursor;
+          this.scene.time.delayedCall(t, () => {
             this.enemyManager.spawn(entry.enemyId, group.spawnNodeId);
             this.livingEnemyCount++;
           });
+          spawnCursor += 500 + Math.random() * 500; // 500–1000 ms between each enemy
         }
         totalExpected += entry.count;
-        groupDelay += entry.count * entry.intervalMs;
+        groupDelay += entry.count * entry.intervalMs; // advance cursor for next entry
       });
     });
 
@@ -93,3 +108,4 @@ export class WaveManager {
     }
   }
 }
+

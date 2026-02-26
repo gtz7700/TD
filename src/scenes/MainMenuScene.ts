@@ -2,6 +2,7 @@
 
 import Phaser from 'phaser';
 import { SaveManager } from '../core/SaveManager';
+import { fadeIn, fadeToScene } from '../utils/SceneTransition';
 
 export class MainMenuScene extends Phaser.Scene {
   constructor() {
@@ -12,6 +13,9 @@ export class MainMenuScene extends Phaser.Scene {
   create(): void {
     const { width, height } = this.scale;
     const cx = width / 2;
+
+    // fade-in חלק בכניסה
+    fadeIn(this);
 
     // רקע
     this.add.rectangle(0, 0, width, height, 0x1a1a2e).setOrigin(0);
@@ -30,10 +34,10 @@ export class MainMenuScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // כפתור מסע קמפיין
-    this.createButton(cx, 380, 'CAMPAIGN', () => this.scene.start('CampaignMapScene'));
+    this.createButton(cx, 380, 'CAMPAIGN', () => fadeToScene(this, 'CampaignMapScene'));
 
     // כפתור גלריית גיבורים
-    this.createButton(cx, 480, 'HERO GALLERY', () => this.scene.start('HeroGalleryScene'));
+    this.createButton(cx, 480, 'HERO GALLERY', () => fadeToScene(this, 'HeroGalleryScene'));
 
     // גרסה
     this.add.text(cx, height - 30, 'v0.1.0', {

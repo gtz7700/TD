@@ -52,6 +52,20 @@ export namespace Events {
   export const TOWER_DESELECTED = 'ui:tower_deselected';
   export const UPGRADE_PURCHASED = 'ui:upgrade_purchased';
   export const TOWER_SOLD = 'ui:tower_sold';
+
+  // --- ניווט UI בין סצנות ---
+  export const UI_NAVIGATE_REQUEST  = 'ui:navigate_request';  // בקשת מעבר לסצנה אחרת דרך UIScene
+  export const GAME_RETRY_REQUESTED = 'game:retry_requested'; // בקשת הפעלה מחדש של הרמה
+
+  // --- בחירת יחידות והנחה (מגש בחירה) ---
+  export const WAVE_PREP_STARTED        = 'wave:prep_started';         // ספירה לאחור לפני גל ראשון
+  export const UNIT_SELECTED            = 'unit:selected';             // בחירת יחידה מהמגש
+  export const UNIT_DESELECTED          = 'unit:deselected';           // ביטול בחירה
+  export const UNIT_PLACEMENT_ATTEMPTED = 'unit:placement_attempted';  // ניסיון הנחה על המפה
+  export const UNIT_PLACEMENT_FAILED    = 'unit:placement_failed';     // הנחה נכשלה
+
+  // --- בחירת מגדל מונח (טווח ויזואלי) ---
+  export const TOWER_CLICKED = 'tower:clicked'; // לחיצה על מגדל מונח → הצגת עיגול טווח
 }
 
 // מיפוי מלא של עומסי האירועים לכל שם אירוע
@@ -87,4 +101,12 @@ export interface EventPayloadMap {
   [Events.TOWER_DESELECTED]: Record<string, never>;
   [Events.UPGRADE_PURCHASED]: { nodeId: string; targetInstanceId: string };
   [Events.TOWER_SOLD]: { instanceId: string; refundGold: number };
+  [Events.UI_NAVIGATE_REQUEST]: { sceneKey: string; data?: Record<string, unknown> };
+  [Events.GAME_RETRY_REQUESTED]: Record<string, never>;
+  [Events.WAVE_PREP_STARTED]: { totalMs: number };
+  [Events.UNIT_SELECTED]: { unitId: string; unitType: 'tower' | 'hero' };
+  [Events.UNIT_DESELECTED]: Record<string, never>;
+  [Events.UNIT_PLACEMENT_ATTEMPTED]: { unitId: string; unitType: 'tower' | 'hero'; worldX: number; worldY: number };
+  [Events.UNIT_PLACEMENT_FAILED]: { reason: 'no_slot' | 'cant_afford' | 'blocked' };
+  [Events.TOWER_CLICKED]: { instanceId: string; x: number; y: number; range: number };
 }

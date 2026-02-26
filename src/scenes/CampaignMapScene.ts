@@ -5,6 +5,7 @@ import { BackButton } from '../ui/BackButton';
 import { StarRating } from '../ui/StarRating';
 import { SaveManager } from '../core/SaveManager';
 import { DATA_KEYS } from '../core/AssetManifest';
+import { fadeIn, fadeToScene } from '../utils/SceneTransition';
 
 export class CampaignMapScene extends Phaser.Scene {
   constructor() {
@@ -16,6 +17,9 @@ export class CampaignMapScene extends Phaser.Scene {
     const { width, height } = this.scale;
     const progress = SaveManager.getProgress();
 
+    // fade-in חלק בכניסה
+    fadeIn(this);
+
     // רקע
     this.add.rectangle(0, 0, width, height, 0x0d1117).setOrigin(0);
 
@@ -24,8 +28,8 @@ export class CampaignMapScene extends Phaser.Scene {
       fontSize: '32px', fontStyle: 'bold', color: '#ffd700',
     }).setOrigin(0.5);
 
-    // כפתור חזרה לתפריט הראשי
-    new BackButton(this, () => this.scene.start('MainMenuScene'));
+    // כפתור חזרה לתפריט הראשי עם fade
+    new BackButton(this, () => fadeToScene(this, 'MainMenuScene'));
 
     // רשימת הרמות מקובץ JSON
     const campaignData = this.cache.json.get(DATA_KEYS.CAMPAIGN) as {
@@ -68,11 +72,11 @@ export class CampaignMapScene extends Phaser.Scene {
     // הצגת כוכבים לרמות פתוחות
     new StarRating(this, x, y + 25, stars);
 
-    // לחיצה מפעילה את סצנת המשחק עם הרמה הנבחרת
+    // לחיצה מפעילה את GameScene עם fade חלק
     btn.setInteractive({ useHandCursor: true });
-    btn.on('pointerdown', () => {
-      this.scene.start('GameScene', { mapId });
-    });
+    btn.on('pointerdown', () =>
+      fadeToScene(this, 'GameScene', { mapId } as Record<string, unknown>)
+    );
     btn.on('pointerover',  () => btn.setFillStyle(0x2a4a6f));
     btn.on('pointerout',   () => btn.setFillStyle(0x1e3a5f));
   }

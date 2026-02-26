@@ -6,12 +6,13 @@
       "spriteKey": "enemy_goblin",
       "maxHP": 80,
       "maxShield": 0,
-      "speed": 80,
+      "speed": 55,
       "lifeDamage": 2,
       "goldReward": 10,
       "xpReward": 5,
-      "hitboxWidth": 32,
-      "hitboxHeight": 32
+      "hitboxWidth": 14,
+      "hitboxHeight": 14,
+      "element": "None"
     },
     {
       "id": "fast_scout",
@@ -19,12 +20,13 @@
       "spriteKey": "enemy_scout",
       "maxHP": 50,
       "maxShield": 0,
-      "speed": 160,
+      "speed": 105,
       "lifeDamage": 3,
       "goldReward": 15,
       "xpReward": 8,
-      "hitboxWidth": 24,
-      "hitboxHeight": 24
+      "hitboxWidth": 10,
+      "hitboxHeight": 10,
+      "element": "Lightning"
     },
     {
       "id": "tank_ogre",
@@ -32,12 +34,13 @@
       "spriteKey": "enemy_ogre",
       "maxHP": 400,
       "maxShield": 150,
-      "speed": 40,
+      "speed": 35,
       "lifeDamage": 5,
       "goldReward": 40,
       "xpReward": 20,
-      "hitboxWidth": 48,
-      "hitboxHeight": 48
+      "hitboxWidth": 18,
+      "hitboxHeight": 18,
+      "element": "Physical"
     }
   ]
 }

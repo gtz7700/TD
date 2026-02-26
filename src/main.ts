@@ -7,18 +7,19 @@ import { MainMenuScene } from './scenes/MainMenuScene';
 import { CampaignMapScene } from './scenes/CampaignMapScene';
 import { HeroGalleryScene } from './scenes/HeroGalleryScene';
 import { GameScene } from './scenes/GameScene';
+import { UIScene } from './scenes/UIScene';
 
 // קונפיגורציה מרכזית של מנוע Phaser - מגדירה מצב תצוגה, סצנות וגדילה
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: 430,
-  height: 932,
+  width: 912,
+  height: 773,
   backgroundColor: '#000000',
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  // רישום כל הסצנות - סדר הרישום לא משפע על סדר ההפעלה
+  // UIScene רשומה אחרי GameScene כדי לרנדר מעל עולם המשחק
   scene: [
     BootScene,
     PreloaderScene,
@@ -26,6 +27,7 @@ const config: Phaser.Types.Core.GameConfig = {
     CampaignMapScene,
     HeroGalleryScene,
     GameScene,
+    UIScene,
   ],
 };
 
