@@ -5,6 +5,7 @@ export interface IPathNode {
   x: number; // מיקום X בעולם המשחק
   y: number; // מיקום Y בעולם המשחק
   nextIds: string[]; // מזהי הצמתים הבאים - מאפשר ענפים מרובים
+  roadWidth?: number; // מחצית רוחב הדרך (יחידות נורמלציה 0-1000, ממופה לפיקסלים ע"י MapManager) — קובע את פיזור האויבים לרוחב
 }
 
 export interface IBranchDef {

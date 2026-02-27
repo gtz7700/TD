@@ -20,21 +20,28 @@ export class HUD {
     this.livesBar      = new LivesBar(scene, 148, 5, 40);
     this.waveIndicator = new WaveIndicator(scene, 286, 5);
 
-    // עדכון HUD בשינויי מטבע
-    EventBus.on(Events.CURRENCY_CHANGED, (p) => {
+    // ─── named handlers so they can be removed on shutdown ──────────────────
+    const onCurrencyChanged = (p: { newWallet: { gold?: number } }) => {
       if (p.newWallet.gold !== undefined) {
         this.goldDisplay.setValue(p.newWallet.gold);
       }
-    });
-
-    // עדכון חיים בעת אובדן
-    EventBus.on(Events.LIFE_LOST, (p) => {
+    };
+    const onLifeLost = (p: { remaining: number }) => {
       this.livesBar.setValue(p.remaining);
-    });
-
-    // עדכון מספר גל
-    EventBus.on(Events.WAVE_STARTED, (p) => {
+    };
+    const onWaveStarted = (p: { waveNumber: number }) => {
       this.waveIndicator.setWave(p.waveNumber);
+    };
+
+    EventBus.on(Events.CURRENCY_CHANGED, onCurrencyChanged);
+    EventBus.on(Events.LIFE_LOST, onLifeLost);
+    EventBus.on(Events.WAVE_STARTED, onWaveStarted);
+
+    // ניקוי בעצירת הסצנה — מונע listeners עצומים שמצביעים לאובייקטים שהושמדו
+    scene.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      EventBus.off(Events.CURRENCY_CHANGED, onCurrencyChanged);
+      EventBus.off(Events.LIFE_LOST, onLifeLost);
+      EventBus.off(Events.WAVE_STARTED, onWaveStarted);
     });
   }
 }

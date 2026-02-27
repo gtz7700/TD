@@ -10,7 +10,10 @@ export abstract class BaseHero extends Phaser.GameObjects.Rectangle {
 
   protected currentHP: number;
   protected abilityCooldown = 0; // מצבר זמן לצינון יכולת
-  protected readonly abilityCooldownMax = 8000; // 8 שניות בסיס
+  protected readonly abilityCooldownMax: number = 8000; // 8 שניות בסיס
+
+  // Sprite providing the visual — set by each subclass constructor
+  protected bodySprite!: Phaser.GameObjects.Sprite;
 
   // אתחול גיבור עם HP בסיסי ומשתני יכולת
   constructor(
@@ -21,7 +24,7 @@ export abstract class BaseHero extends Phaser.GameObjects.Rectangle {
     color: number
   ) {
     super(scene, x, y, def.hitboxWidth, def.hitboxHeight, color);
-    this.setDepth(18).setStrokeStyle(2, 0xffd700);
+    this.setDepth(18).setAlpha(0); // hitbox invisible — sprite provides visuals
     scene.add.existing(this);
 
     this.instanceId = instanceId;
@@ -40,4 +43,9 @@ export abstract class BaseHero extends Phaser.GameObjects.Rectangle {
 
   // הפעלת יכולת מיוחדת - ממומשת בתתי-מחלקות
   protected abstract activateAbility(combatManager: CombatManager): void;
+
+  destroy(fromScene?: boolean): void {
+    this.bodySprite?.destroy();
+    super.destroy(fromScene);
+  }
 }

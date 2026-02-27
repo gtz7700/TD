@@ -31,8 +31,10 @@ export class GoldDisplay {
     container.add([bg, coin, coinInner, this.valueText]);
   }
 
-  // עדכון ערך הזהב המוצג
+  // עדכון ערך הזהב המוצג — guard נגד Text שהושמד (race-condition בין סצנות)
   setValue(gold: number): void {
-    this.valueText.setText(`${gold}`);
+    if (this.valueText.active) {
+      this.valueText.setText(`${gold}`);
+    }
   }
 }

@@ -5,6 +5,7 @@ export const BG = {
   FOREST: 'bg_forest',
   DESERT: 'bg_desert',
   CAVES:  'bg_caves',
+  HUB:    'bg_hub',
 } as const;
 
 // מפתחות ספרייטים של אויבים
@@ -44,6 +45,17 @@ export const PROJECTILE_SPRITES = {
   ARROW:   'proj_arrow',
   ORB:     'proj_orb',
   BOULDER: 'proj_boulder',
+} as const;
+
+// מפתחות ספרייטשיטים של יחידות (344×192 px לפריים, רשת 4×4: 4 כיוונים × 4 מצבים)
+export const UNIT_SPRITES = {
+  ARCHER_HERO: 'unit_archer_hero',
+  WARRIOR:     'unit_warrior',
+  GOBLIN:      'unit_goblin',
+  WOLF:        'unit_wolf',
+  RINO:        'unit_rino',
+  RABBIT:      'unit_rabbit',
+  ICE_WIZARD:  'unit_ice_wizard',
 } as const;
 
 // מפתחות קבצי JSON שנטענים ב-Preloader

@@ -33,8 +33,8 @@ export class WaveIndicator {
 
     container.add([bg, icon, this.valueText]);
 
-    // ספירה לאחור לפני גל ראשון
-    EventBus.on(Events.WAVE_PREP_STARTED, (p) => {
+    // ─── named handlers so they can be removed on shutdown ───────────────────
+    const onPrepStarted = (p: { totalMs: number }) => {
       let remaining = Math.ceil(p.totalMs / 1000);
       this.valueText.setText(`Wave 1 in ${remaining}s`).setColor('#ffff88');
       this.countdownTimer = scene.time.addEvent({
@@ -47,17 +47,29 @@ export class WaveIndicator {
           }
         },
       });
-    });
+    };
 
-    // עדכון לגל פעיל
-    EventBus.on(Events.WAVE_STARTED, (p) => {
+    const onWaveStarted = (p: { waveNumber: number }) => {
       this.countdownTimer?.remove();
       this.countdownTimer = null;
       this.valueText.setText(`Wave ${p.waveNumber}`).setColor('#aaffaa');
+    };
+
+    EventBus.on(Events.WAVE_PREP_STARTED, onPrepStarted);
+    EventBus.on(Events.WAVE_STARTED, onWaveStarted);
+
+    // ניקוי בעצירת הסצנה: עצירת הטיימר והסרת מאזיני EventBus לפני השמדת האובייקטים
+    scene.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.countdownTimer?.remove();
+      this.countdownTimer = null;
+      EventBus.off(Events.WAVE_PREP_STARTED, onPrepStarted);
+      EventBus.off(Events.WAVE_STARTED, onWaveStarted);
     });
   }
 
   setWave(waveNumber: number): void {
-    this.valueText.setText(`Wave ${waveNumber}`).setColor('#aaffaa');
+    if (this.valueText.active) {
+      this.valueText.setText(`Wave ${waveNumber}`).setColor('#aaffaa');
+    }
   }
 }

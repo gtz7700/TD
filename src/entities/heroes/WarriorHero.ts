@@ -2,6 +2,7 @@
 
 import Phaser from 'phaser';
 import { BaseHero } from './BaseHero';
+import { UNIT_SPRITES } from '../../core/AssetManifest';
 import type { CombatManager } from '../../managers/CombatManager';
 import type { IHeroDef } from '../../types/UnitTypes';
 
@@ -14,6 +15,8 @@ export class WarriorHero extends BaseHero {
     x: number, y: number
   ) {
     super(scene, instanceId, def, x, y, 0x8b0000);
+    this.bodySprite = scene.add.sprite(x, y, UNIT_SPRITES.WARRIOR)
+      .setFrame(0).setDisplaySize(48, 48).setDepth(18);
   }
 
   // יכולת Cleave - נזק AOE קרוב מסביב לגיבור

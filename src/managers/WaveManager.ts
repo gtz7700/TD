@@ -23,8 +23,9 @@ export class WaveManager {
     this.waveConfig = scene.cache.json.get(waveKey) as IWaveConfig;
 
     // מעקב אחר מספר האויבים החיים לצורך זיהוי סיום גל
-    EventBus.on(Events.ENEMY_DIED,         () => this.onEnemyRemoved());
-    EventBus.on(Events.ENEMY_REACHED_EXIT, () => this.onEnemyRemoved());
+    EventBus.on(Events.ENEMY_DIED,          () => this.onEnemyRemoved());
+    EventBus.on(Events.ENEMY_REACHED_EXIT,  () => this.onEnemyRemoved());
+    EventBus.on(Events.NEXT_WAVE_REQUESTED, () => this.startNextWave());
   }
 
   // הפעלת הגל הבא - אם זה הגל הראשון, מחכה לזמן ההכנה תחילה
@@ -78,7 +79,7 @@ export class WaveManager {
             this.enemyManager.spawn(entry.enemyId, group.spawnNodeId);
             this.livingEnemyCount++;
           });
-          spawnCursor += 500 + Math.random() * 500; // 500–1000 ms between each enemy
+          spawnCursor += 1200 + Math.random() * 800; // 1200–2000 ms between each enemy
         }
         totalExpected += entry.count;
         groupDelay += entry.count * entry.intervalMs; // advance cursor for next entry

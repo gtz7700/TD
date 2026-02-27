@@ -1,4 +1,4 @@
-// Path manager — resolves enemy routes through the map and builds smooth Catmull-Rom spline curves.
+// Path manager — resolves enemy routes through the map and builds piecewise-linear paths.
 
 import Phaser from 'phaser';
 import { MapManager } from './MapManager';
@@ -44,20 +44,26 @@ export class PathManager {
     return route.map(id => this.mapManager.getNode(id));
   }
 
-  // Build a piecewise-linear Phaser.Curves.Path from a resolved route.
-  // Uses lineTo segments (NOT splineTo) so enemies stay *strictly* within the line between
-  // every pair of consecutive waypoints — no spline overshoot, no grass-walking.
-  // Arc-length parameterisation in BaseEnemy.update() ensures uniform speed along each segment.
+  // בניית נתיב קווי מחתיכות ישרות בין נקודות הציון — lineTo שומר אויבים בתוך קווי הדרך בלבד.
+  // splineTo (Catmull-Rom) נדחה: גורם לחריגה מהכביש בפינות חדות (overshoot).
+  // הפיזור הצדדי הטבעי מיושם ב-BaseEnemy.update() עם אופסט ניצב לציר התנועה.
   buildCurve(route: string[]): Phaser.Curves.Path {
     const nodes = this.routeToNodes(route);
-    const first = nodes[0];
-    const path = new Phaser.Curves.Path(first.x, first.y);
+    const path = new Phaser.Curves.Path(nodes[0].x, nodes[0].y);
 
     for (let i = 1; i < nodes.length; i++) {
       path.lineTo(nodes[i].x, nodes[i].y);
     }
 
     return path;
+  }
+
+  // מחזיר את מחצית רוחב הדרך (בפיקסלים) בנקודת ההתחלה של הנתיב.
+  // ערך זה מועבר לאויב כדי לקבוע את טווח הפיזור הצדדי שלו.
+  getRoadHalfWidthAtSpawn(route: string[]): number {
+    if (route.length === 0) return 0;
+    const node = this.mapManager.getNode(route[0]);
+    return node.roadWidth ?? 0;
   }
 
   // BFS shortest-route (used as fallback / future smart-enemy feature).

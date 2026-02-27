@@ -5,6 +5,7 @@ import { Events } from '../types/EventTypes';
 import { EnemyManager } from './EnemyManager';
 import { getStatusEffect, getDamageMultiplier } from '../utils/ElementUtils';
 import type { IDamageEvent, IHitResult } from '../types/CombatTypes';
+import type { BaseEnemy } from '../entities/enemies/BaseEnemy';
 
 export class CombatManager {
   private readonly enemyManager: EnemyManager;
@@ -65,6 +66,17 @@ export class CombatManager {
     }
 
     return result;
+  }
+
+  // החזרת האויב הקרוב ביותר ברדיוס — לשימוש גיבורים בירייה ממוקדת
+  getNearestEnemyInRange(cx: number, cy: number, range: number): BaseEnemy | null {
+    const enemies = this.enemyManager.getEnemiesInRadius(cx, cy, range);
+    if (enemies.length === 0) return null;
+    return enemies.reduce((nearest, e) => {
+      const d  = Math.hypot(e.x - cx, e.y - cy);
+      const dn = Math.hypot(nearest.x - cx, nearest.y - cy);
+      return d < dn ? e : nearest;
+    });
   }
 
   // נזק AOE - מחיל נזק על כל אויב ברדיוס

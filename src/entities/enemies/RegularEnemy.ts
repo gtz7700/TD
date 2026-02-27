@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { BaseEnemy } from './BaseEnemy';
+import { UNIT_SPRITES } from '../../core/AssetManifest';
 import type { IEnemyDef } from '../../types/EnemyTypes';
 
 export class RegularEnemy extends BaseEnemy {
@@ -7,19 +8,13 @@ export class RegularEnemy extends BaseEnemy {
     scene: Phaser.Scene,
     instanceId: string,
     def: IEnemyDef,
-    curve: Phaser.Curves.Path
+    curve: Phaser.Curves.Path,
+    roadHalfWidthPx = 0
   ) {
-    super(scene, instanceId, def, curve);
+    super(scene, instanceId, def, curve, roadHalfWidthPx);
 
-    // Goblin: fat arrow pointing right (+x = forward direction before rotation)
-    //   tip at (9, 0), back corners at (-6, ±7)
-    const g = this.bodyGfx;
-    g.fillStyle(0x44aa44, 1);
-    g.fillTriangle(9, 0, -6, -7, -6, 7);
-    g.lineStyle(1, 0xaaffaa, 0.8);
-    g.strokeTriangle(9, 0, -6, -7, -6, 7);
-    // tiny eye — offset left (front of arrow in local +x)
-    g.fillStyle(0xffffff, 0.9);
-    g.fillCircle(5, -2, 2);
+    this.bodySprite = scene.add.sprite(0, 0, UNIT_SPRITES.GOBLIN)
+      .setFrame(2).setDisplaySize(48, 48).setDepth(21);
+    this.setupWalkAnim(UNIT_SPRITES.GOBLIN);
   }
 }

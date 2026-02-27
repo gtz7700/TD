@@ -13,7 +13,7 @@ const DEFAULT_SAVE: ISaveData = {
       map_002: { unlocked: false, stars: 0 },
       map_003: { unlocked: false, stars: 0 },
     },
-    heroGalleryUnlocks:  { warrior: true, archer_hero: false },
+    heroGalleryUnlocks:  { warrior: true, archer_hero: true },
     heroGalleryUpgrades: { warrior: [],   archer_hero: [] },
     playerLevel: 1,
     xp: 0,
@@ -30,6 +30,11 @@ class SaveManagerClass {
       const raw = localStorage.getItem(SAVE_KEY);
       if (raw) {
         this.data = JSON.parse(raw) as ISaveData;
+        // מיזוג נעילות גיבורים ברירת מחדל — מבטיח שגיבורים חדשים יופיעו גם בשמירות ישנות
+        this.data.progress.heroGalleryUnlocks = {
+          ...DEFAULT_SAVE.progress.heroGalleryUnlocks,
+          ...this.data.progress.heroGalleryUnlocks,
+        };
       } else {
         this.data = structuredClone(DEFAULT_SAVE);
       }

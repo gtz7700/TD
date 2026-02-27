@@ -29,7 +29,7 @@ export class PauseOverlay extends Phaser.GameObjects.Container {
     // כפתור יציאה
     const quitBtn = this.createButton(scene, cx, cy + 70, 'QUIT GAME', 0x5a2727, () => {
       this.setVisible(false);
-      EventBus.emit(Events.UI_NAVIGATE_REQUEST, { sceneKey: 'CampaignMapScene' });
+      EventBus.emit(Events.UI_NAVIGATE_REQUEST, { sceneKey: 'MainMenuScene' });
     });
 
     this.add([bg, title, resumeBtn, quitBtn]);

@@ -39,12 +39,14 @@ export class EnemyManager {
     const route = this.pathManager.resolveRoute(spawnNodeId);
     const curve = this.pathManager.buildCurve(route);
     const startPt = curve.getPoint(0);
+    // מחצית רוחב הדרך בנקודת ההתחלה — מועברת לאויב לחישוב האופסט הצדדי האקראי
+    const roadHalfWidthPx = this.pathManager.getRoadHalfWidthAtSpawn(route);
 
     let enemy: BaseEnemy;
     switch (def.category) {
-      case 'Fast':  enemy = new FastEnemy(this.scene, instanceId, def, curve);    break;
-      case 'Tank':  enemy = new TankEnemy(this.scene, instanceId, def, curve);    break;
-      default:      enemy = new RegularEnemy(this.scene, instanceId, def, curve);
+      case 'Fast':  enemy = new FastEnemy(this.scene, instanceId, def, curve, roadHalfWidthPx);    break;
+      case 'Tank':  enemy = new TankEnemy(this.scene, instanceId, def, curve, roadHalfWidthPx);    break;
+      default:      enemy = new RegularEnemy(this.scene, instanceId, def, curve, roadHalfWidthPx);
     }
 
     enemy.setPosition(startPt.x, startPt.y);

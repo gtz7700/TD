@@ -31,6 +31,7 @@ export namespace Events {
   export const WAVE_STARTED = 'wave:started';
   export const WAVE_COMPLETE = 'wave:complete';
   export const ALL_WAVES_COMPLETE = 'wave:all_complete';
+  export const NEXT_WAVE_REQUESTED = 'wave:next_requested';
 
   // --- משק ---
   export const CURRENCY_CHANGED = 'economy:currency_changed';
@@ -44,6 +45,7 @@ export namespace Events {
   // --- מצב משחק ---
   export const GAME_PAUSED = 'game:paused';
   export const GAME_RESUMED = 'game:resumed';
+  export const GAME_SPEED_CHANGED = 'game:speed_changed';
   export const LEVEL_COMPLETE = 'game:level_complete';
   export const LEVEL_FAILED = 'game:level_failed';
 
@@ -88,6 +90,7 @@ export interface EventPayloadMap {
   [Events.WAVE_STARTED]: { waveNumber: number };
   [Events.WAVE_COMPLETE]: { waveNumber: number; goldBonus: number };
   [Events.ALL_WAVES_COMPLETE]: { levelId: string };
+  [Events.NEXT_WAVE_REQUESTED]: Record<string, never>;
   [Events.CURRENCY_CHANGED]: ICurrencyDelta & { newWallet: IPlayerWallet };
   [Events.REWARD_GRANTED]: RewardPayload;
   [Events.XP_LEVEL_UP]: { newLevel: number; rewards: RewardPayload };
@@ -95,6 +98,7 @@ export interface EventPayloadMap {
   [Events.PLAYER_DEFEATED]: Record<string, never>;
   [Events.GAME_PAUSED]: Record<string, never>;
   [Events.GAME_RESUMED]: Record<string, never>;
+  [Events.GAME_SPEED_CHANGED]: { scale: 1 | 2 | 3 };
   [Events.LEVEL_COMPLETE]: { levelId: string; stars: 1 | 2 | 3; gemsEarned: number };
   [Events.LEVEL_FAILED]: { levelId: string };
   [Events.TOWER_SELECTED]: { instanceId: string };

@@ -18,6 +18,29 @@ import { LifeManager } from '../managers/LifeManager';
 import { UpgradeManager } from '../managers/UpgradeManager';
 import { HeroManager } from '../managers/HeroManager';
 import type { ITowerDef, IHeroDef } from '../types/UnitTypes';
+import type { ISlotDef } from '../types/MapTypes';
+
+// Draws a slot rect respecting optional rotation (degrees).
+// Caller must set lineStyle / fillStyle before calling.
+function drawSlotShape(g: Phaser.GameObjects.Graphics, slot: ISlotDef): void {
+  const { x, y, width: w, height: h } = slot.rect;
+  const rot = slot.rotation ?? 0;
+  if (rot === 0) {
+    g.fillRect(x, y, w, h);
+    g.strokeRect(x, y, w, h);
+  } else {
+    const r = Phaser.Math.DegToRad(rot);
+    const cos = Math.cos(r), sin = Math.sin(r);
+    const cx = x + w / 2, cy = y + h / 2;
+    const corners: [number, number][] = [[-w/2, -h/2], [w/2, -h/2], [w/2, h/2], [-w/2, h/2]];
+    const pts = corners.map(([dx, dy]) => ({
+      x: cx + dx * cos - dy * sin,
+      y: cy + dx * sin + dy * cos,
+    }));
+    g.fillPoints(pts, true);
+    g.strokePoints(pts, true);
+  }
+}
 
 export class GameScene extends Phaser.Scene {
   // מנהלים - נוצרים ב-create ומנוקים ב-shutdown
@@ -42,6 +65,9 @@ export class GameScene extends Phaser.Scene {
   // range circle graphics (shown when tapping a placed tower)
   private rangeGraphics!: Phaser.GameObjects.Graphics;
   private _towerClickedThisFrame = false;
+
+  // מהירות משחק (X1/X2/X3) - משפיעה על delta וטיימרים
+  private gameSpeed: 1 | 2 | 3 = 1;
 
   constructor() {
     super({ key: 'GameScene' });
@@ -90,22 +116,16 @@ export class GameScene extends Phaser.Scene {
     const bgKey = this.mapManager.getBackgroundKey();
     if (bgKey && this.textures.exists(bgKey)) {
       const { width, height } = this.scale;
-      const bg = this.add.image(width / 2, height / 2, bgKey).setDepth(-1);
-      const scale = Math.min(width / bg.width, height / bg.height);
+      const HUD_H    = 46;
+      const TRAY_H   = 90;
+      const gameAreaH = height - HUD_H - TRAY_H;
+      const bg = this.add.image(width / 2, HUD_H + gameAreaH / 2, bgKey).setDepth(-1);
+      const scale = Math.min(width / bg.width, gameAreaH / bg.height);
       bg.setScale(scale);
     }
 
-    // ─── Debug click: normalized coords + red dot ─────────────────────────
-    const debugDots = this.add.graphics().setDepth(200);
-    this.input.on('pointerdown', (ptr: Phaser.Input.Pointer) => {
-      const { width, height } = this.scale;
-      const nx = Math.round((ptr.x / width) * 1000);
-      const ny = Math.round((ptr.y / height) * 1000);
-      console.log(`[MAP DEBUG] [${nx}, ${ny}]  (screen: ${Math.round(ptr.x)}, ${Math.round(ptr.y)})`);
-      debugDots.fillStyle(0xff0000, 0.85);
-      debugDots.fillCircle(ptr.x, ptr.y, 5);
-
-      // clear range circle when tapping empty space (not a tower)
+    // ─── clear range circle when tapping empty space ─────────────────────────
+    this.input.on('pointerdown', () => {
       if (this._towerClickedThisFrame) {
         this._towerClickedThisFrame = false;
       } else {
@@ -156,14 +176,23 @@ export class GameScene extends Phaser.Scene {
       const color = ok ? 0x44ff44 : 0xff4444;
       this.slotGraphics.lineStyle(2, color, 0.9);
       this.slotGraphics.fillStyle(color, 0.35);
-      this.slotGraphics.fillRect(slot.rect.x, slot.rect.y, slot.rect.width, slot.rect.height);
-      this.slotGraphics.strokeRect(slot.rect.x, slot.rect.y, slot.rect.width, slot.rect.height);
+      drawSlotShape(this.slotGraphics, slot);
     });
 
     // ─── placement attempt: 200ms flash then resolve ──────────────────────────
     EventBus.on(Events.UNIT_PLACEMENT_ATTEMPTED, (p) => {
       const def = this.towerManager.getDef(p.unitId) ?? this.heroManager.getDef(p.unitId);
       if (!def) return;
+
+      // ─── בדיקת יכולת כלכלית לפני הנחה ──────────────────────────────────────
+      if (p.unitType === 'tower') {
+        const towerDef = this.towerManager.getDef(p.unitId);
+        if (towerDef && this.economyManager.getWallet().gold < towerDef.cost) {
+          EventBus.emit(Events.UNIT_PLACEMENT_FAILED, { reason: 'cant_afford' });
+          return;
+        }
+      }
+
       const ok = this.placementManager.tryPlaceAtPoint(def, p.unitType, p.worldX, p.worldY);
 
       const slot = this.mapManager.getAllSlots().find(s =>
@@ -177,8 +206,7 @@ export class GameScene extends Phaser.Scene {
         this.slotGraphics.clear();
         this.slotGraphics.lineStyle(2, color, 0.9);
         this.slotGraphics.fillStyle(color, 0.5);
-        this.slotGraphics.fillRect(slot.rect.x, slot.rect.y, slot.rect.width, slot.rect.height);
-        this.slotGraphics.strokeRect(slot.rect.x, slot.rect.y, slot.rect.width, slot.rect.height);
+        drawSlotShape(this.slotGraphics, slot);
       }
 
       this.time.delayedCall(200, () => {
@@ -199,23 +227,30 @@ export class GameScene extends Phaser.Scene {
     EventBus.on(Events.GAME_PAUSED,  () => this.scene.pause());
     EventBus.on(Events.GAME_RESUMED, () => this.scene.resume());
 
-    // התחלת הגל הראשון
-    this.waveManager.startNextWave();
+    // שינוי מהירות משחק: X1/X2/X3 — משנה delta ותיזמון טיימרים
+    EventBus.on(Events.GAME_SPEED_CHANGED, (p) => {
+      this.gameSpeed = p.scale;
+      this.time.timeScale = p.scale;
+    });
+
+    // דחיית טיק אחד: UIScene.create() יסיים → שידור ארנק ראשוני + התחלת גל
+    this.time.delayedCall(0, () => {
+      this.economyManager.broadcastWallet();
+      this.waveManager.startNextWave();
+    });
   }
 
   // עדכון מסגרתי - מתרחש כל פריים
   update(_time: number, delta: number): void {
-    this.enemyManager.update(delta);
-    this.towerManager.update(delta);
-    this.projectileManager.update(delta);
-    this.heroManager.update(delta);
+    const d = delta * this.gameSpeed;
+    this.enemyManager.update(d);
+    this.towerManager.update(d);
+    this.projectileManager.update(d);
+    this.heroManager.update(d);
   }
 
-  // ניקוי: מסיר את כל המאזינים, מנקה פנקס ועוצר UIScene
+  // ניקוי: מנקה EventBus ופנקס — UIScene עוצרת את עצמה דרך scene.start()
   shutdown(): void {
-    if (this.scene.get('UIScene')?.scene.isActive()) {
-      this.scene.stop('UIScene');
-    }
     EventBus.clearAll();
     GameRegistry.clear();
   }

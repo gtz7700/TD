@@ -13,7 +13,7 @@ import { UIScene } from './scenes/UIScene';
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   width: 912,
-  height: 773,
+  height: 909, // 773 (map image) + 46 (HUD) + 90 (unit tray) = full layout without overlap
   backgroundColor: '#000000',
   scale: {
     mode: Phaser.Scale.FIT,

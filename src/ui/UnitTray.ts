@@ -4,7 +4,7 @@ import Phaser from 'phaser';
 import { EventBus } from '../core/EventBus';
 import { Events } from '../types/EventTypes';
 import { SaveManager } from '../core/SaveManager';
-import { DATA_KEYS } from '../core/AssetManifest';
+import { DATA_KEYS, UNIT_SPRITES } from '../core/AssetManifest';
 import type { ITowerDef, IHeroDef } from '../types/UnitTypes';
 
 export const TRAY_HEIGHT = 90;
@@ -19,7 +19,7 @@ const ELEMENT_COLORS: Record<string, number> = {
   None:      0x777777,
 };
 
-type TrayUnit = { id: string; name: string; unitType: 'tower' | 'hero'; cost: number; costType: 'gold' | 'gems'; elementColor: number };
+type TrayUnit = { id: string; name: string; unitType: 'tower' | 'hero'; cost: number; costType: 'gold' | 'gems'; elementColor: number; spriteKey?: string };
 
 export class UnitTray {
   private readonly scene: Phaser.Scene;
@@ -59,10 +59,14 @@ export class UnitTray {
     const heroData = scene.cache.json.get(DATA_KEYS.HEROES) as { heroes: IHeroDef[] };
     heroData.heroes.forEach(def => {
       if (progress.heroGalleryUnlocks[def.id]) {
+        const spriteKey = def.id === 'warrior'    ? UNIT_SPRITES.WARRIOR
+          : def.id === 'archer_hero'               ? UNIT_SPRITES.ARCHER_HERO
+          : undefined;
         this.units.push({
           id: def.id, name: def.name, unitType: 'hero',
-          cost: def.unlockCostGems, costType: 'gems',
+          cost: 0, costType: 'gems',  // deploy is free once unlocked in HeroGallery
           elementColor: 0x888888,
+          spriteKey,
         });
       }
     });
@@ -83,8 +87,10 @@ export class UnitTray {
       cardBg.lineStyle(1, 0x555555, 1);
       cardBg.strokeRect(0, 0, cardW, cardH);
 
-      // צבע אלמנט
-      const colorBlock = scene.add.rectangle(cardW / 2, 22, 50, 30, unit.elementColor);
+      // צבע אלמנט — frame 0 (idle-FRONT) לגיבורים, מלבן צבעוני למגדלים
+      const colorBlock = unit.spriteKey
+        ? scene.add.sprite(cardW / 2, 22, unit.spriteKey).setFrame(0).setDisplaySize(50, 40).setOrigin(0.5)
+        : scene.add.rectangle(cardW / 2, 22, 50, 30, unit.elementColor);
 
       // שם יחידה
       const nameText = scene.add.text(cardW / 2, 44, unit.name.split(' ')[0], {
@@ -115,15 +121,46 @@ export class UnitTray {
     });
 
     // עדכון צבע כפי שהזהב משתנה
-    EventBus.on(Events.CURRENCY_CHANGED, (p) => {
+    const onCurrencyChanged = (p: { newWallet: { gold?: number; gems?: number } }) => {
       if (p.newWallet.gold !== undefined) this.currentGold = p.newWallet.gold;
       if (p.newWallet.gems !== undefined) this.currentGems = p.newWallet.gems;
       this.updateAffordability();
+    };
+    EventBus.on(Events.CURRENCY_CHANGED, onCurrencyChanged);
+
+    // ניקוי ב-SHUTDOWN — מונע listener עצום שמצביע לאובייקטים שהושמדו
+    scene.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      EventBus.off(Events.CURRENCY_CHANGED, onCurrencyChanged);
     });
   }
 
   // לחיצה על כרטיס - בחירה/ביטול בחירה
   private onCardTap(index: number): void {
+    const unit = this.units[index];
+
+    // ─── בדיקת יכולת כלכלית ─────────────────────────────────────────────────
+    const canAfford = unit.costType === 'gold'
+      ? unit.cost === 0 || this.currentGold >= unit.cost
+      : unit.cost === 0 || this.currentGems >= unit.cost;
+
+    if (!canAfford && this.selectedIndex !== index) {
+      // הבהוב אדום קצר — אין מספיק כסף
+      const bg = this.cardBgs[index];
+      const cardW = 90, cardH = 72;
+      bg.clear();
+      bg.fillStyle(0x441111, 1);
+      bg.fillRect(0, 0, cardW, cardH);
+      bg.lineStyle(2, 0xff2222, 1);
+      bg.strokeRect(0, 0, cardW, cardH);
+      this.scene.time.delayedCall(350, () => {
+        if (this.selectedIndex !== index) {
+          bg.clear(); bg.fillStyle(0x222222, 1); bg.fillRect(0, 0, cardW, cardH);
+          bg.lineStyle(1, 0x555555, 1); bg.strokeRect(0, 0, cardW, cardH);
+        }
+      });
+      return;
+    }
+
     if (this.selectedIndex === index) {
       // לחיצה שנייה על אותו כרטיס = ביטול
       this.clearSelection();
@@ -133,7 +170,6 @@ export class UnitTray {
     this.clearSelection();
     this.selectedIndex = index;
     this.highlightCard(index, true);
-    const unit = this.units[index];
     EventBus.emit(Events.UNIT_SELECTED, { unitId: unit.id, unitType: unit.unitType });
   }
 

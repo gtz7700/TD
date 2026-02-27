@@ -1,7 +1,7 @@
 // סצנת הטעינה - טוענת את כל נכסי המשחק עם פס התקדמות
 
 import Phaser from 'phaser';
-import { DATA_KEYS, BG } from '../core/AssetManifest';
+import { DATA_KEYS, BG, UNIT_SPRITES } from '../core/AssetManifest';
 
 export class PreloaderScene extends Phaser.Scene {
   private progressBar!: Phaser.GameObjects.Graphics;
@@ -38,7 +38,9 @@ export class PreloaderScene extends Phaser.Scene {
     });
 
     // מעבר לתפריט עם fade-in לאחר השלמת הטעינה
+    // לפני המעבר: עיבוד שקיפות לכל הספרייטשיטים (הסרת רקע לבן)
     this.load.on('complete', () => {
+      Object.values(UNIT_SPRITES).forEach(key => this.makeTransparent(key, 172, 192));
       this.cameras.main.fadeOut(200, 0, 0, 0);
       this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
         this.scene.start('MainMenuScene');
@@ -53,24 +55,29 @@ export class PreloaderScene extends Phaser.Scene {
     // ─── תמונות רקע למפות ───────────────────────────────────────────────────
     // level-1-bg.jpg כבר הוצב ידנית ב-public/assets/images/maps/
     this.load.image(BG.FOREST, 'assets/images/maps/level-1-bg.png');
+    this.load.image(BG.HUB,    'assets/images/maps/Main Hub.png');
     // להוסיף כאן תמונות נוספות בעתיד:
     // this.load.image(BG.DESERT, 'assets/images/maps/level-2-bg.jpg');
     // this.load.image(BG.CAVES,  'assets/images/maps/level-3-bg.jpg');
 
-    // ─── ספרייטים של אויבים (להחליף Rectangle כשמוכן) ──────────────────────
-    // this.load.image(ENEMY_SPRITES.GOBLIN, 'assets/images/enemies/goblin.png');
-    // this.load.image(ENEMY_SPRITES.SCOUT,  'assets/images/enemies/scout.png');
-    // this.load.image(ENEMY_SPRITES.OGRE,   'assets/images/enemies/ogre.png');
+    // ─── ספרייטשיטים (172×192 פיקסל לפריים, רשת 8×4: כל עמודה = דמות אחת) ─────
+    // layout: col0=FRONT_idle, col1=FRONT_walk, col2=RIGHT_idle, col3=RIGHT_walk,
+    //         col4=LEFT_idle,  col5=LEFT_walk,  col6=BACK_idle,  col7=BACK_walk
+    // frame = row*8+col | walk-RIGHT_idle=2, walk-RIGHT_walk=3
+    const SS = { frameWidth: 172, frameHeight: 192 };
+    this.load.spritesheet(UNIT_SPRITES.ARCHER_HERO, 'assets/images/heros/Archer sprites.png', SS);
+    this.load.spritesheet(UNIT_SPRITES.WARRIOR,     'assets/images/heros/thunder wizzard sprites.png', SS);
+    this.load.spritesheet(UNIT_SPRITES.GOBLIN,      'assets/images/enemy/Goblin Sprite.png', SS);
+    this.load.spritesheet(UNIT_SPRITES.WOLF,        'assets/images/enemy/wolf sprites.png', SS);
+    this.load.spritesheet(UNIT_SPRITES.RINO,        'assets/images/enemy/rino sprites.png', SS);
+    this.load.spritesheet(UNIT_SPRITES.RABBIT,      'assets/images/enemy/Rabbit sprites.png', SS);
+    this.load.spritesheet(UNIT_SPRITES.ICE_WIZARD,  'assets/images/heros/ice wizzard sptires.png', SS);
 
     // ─── ספרייטים של מגדלים (להחליף Rectangle כשמוכן) ──────────────────────
     // this.load.image(TOWER_SPRITES.ARCHER,   'assets/images/towers/archer.png');
     // this.load.image(TOWER_SPRITES.MAGE,     'assets/images/towers/mage.png');
     // this.load.image(TOWER_SPRITES.CATAPULT, 'assets/images/towers/catapult.png');
     // this.load.image(TOWER_SPRITES.FREEZE,   'assets/images/towers/freeze.png');
-
-    // ─── ספרייטים של גיבורים ─────────────────────────────────────────────────
-    // this.load.image(HERO_SPRITES.WARRIOR, 'assets/images/heroes/warrior.png');
-    // this.load.image(HERO_SPRITES.ARCHER,  'assets/images/heroes/archer.png');
 
     // ─── ספרייטים של UI ──────────────────────────────────────────────────────
     // this.load.image(UI.GOLD_ICON,  'assets/images/ui/gold.png');
@@ -97,5 +104,26 @@ export class PreloaderScene extends Phaser.Scene {
     this.load.json(DATA_KEYS.HERO_UPGRADES,  'data/upgrades/hero_upgrades.json');
 
     this.load.start();
+  }
+
+  // הסרת רקע לבן/אפור מספרייטשיט — מאפשר עיבוד pixel-level לאחר הטעינה
+  // עובד על ידי יצירת Canvas, שינוי פיקסלים בהירים לשקופים, והחלפת הטקסטורה
+  private makeTransparent(key: string, fw: number, fh: number): void {
+    const texture = this.textures.get(key);
+    if (!texture) return;
+    const src = texture.source[0];
+    const canvas = document.createElement('canvas');
+    canvas.width = src.width; canvas.height = src.height;
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(src.image as HTMLImageElement, 0, 0);
+    const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const d = id.data;
+    for (let i = 0; i < d.length; i += 4) {
+      if (d[i] > 200 && d[i + 1] > 200 && d[i + 2] > 200) d[i + 3] = 0;
+    }
+    ctx.putImageData(id, 0, 0);
+    this.textures.remove(key);
+    // Phaser's JS runtime accepts HTMLCanvasElement; cast needed for TS types
+    this.textures.addSpriteSheet(key, canvas as unknown as HTMLImageElement, { frameWidth: fw, frameHeight: fh });
   }
 }

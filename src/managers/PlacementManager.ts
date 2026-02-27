@@ -33,12 +33,13 @@ export class PlacementManager {
     const { rect, allowOnPath } = slotState.def;
     const checkRect = slotState.def.exactHitbox ?? rect;
 
-    // בדיקה 1: תיבת הפגיעה נמצאת לחלוטין בתוך האזור (exactHitbox מדויק יותר מ-rect)
+    // בדיקה 1: נקודת המרכז נמצאת בתוך אזור ההנחה (מאפשר יחידות גדולות בסלוטים צרים)
     const hitbox = hitboxFromCenter(dropX, dropY, def.hitboxWidth, def.hitboxHeight);
-    if (!rectContainsRect(checkRect, hitbox)) return false;
+    if (dropX < checkRect.x || dropX > checkRect.x + checkRect.width ||
+        dropY < checkRect.y || dropY > checkRect.y + checkRect.height) return false;
 
-    // בדיקה 2: canPlaceOnPath - האם מותר על הנתיב
-    if (!allowOnPath && def.canPlaceOnPath) return false;
+    // בדיקה 2: canPlaceOnPath - דחייה רק אם הסלוט על הנתיב והיחידה אינה יכולה לעמוד עליו
+    if (allowOnPath && !def.canPlaceOnPath) return false;
 
     // בדיקה 3: אין חפיפה עם יחידות קיימות באותו אזור
     for (const placed of slotState.placedUnits) {

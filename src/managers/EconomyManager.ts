@@ -67,6 +67,11 @@ export class EconomyManager {
     return this.wallet;
   }
 
+  // שידור מצב ארנק נוכחי ל-HUD (לאחר אתחול או RETRY)
+  broadcastWallet(): void {
+    EventBus.emit(Events.CURRENCY_CHANGED, { newWallet: { ...this.wallet } });
+  }
+
   // ניסיון ניכוי עלות - מחזיר false אם אין מספיק
   deduct(amount: number, currency: 'gold' | 'gems'): boolean {
     if (this.wallet[currency] < amount) return false;

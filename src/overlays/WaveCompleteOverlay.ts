@@ -30,7 +30,10 @@ export class WaveCompleteOverlay extends Phaser.GameObjects.Container {
       fontSize: '18px', color: '#fff',
     }).setOrigin(0.5);
 
-    continueBtn.on('pointerdown', () => this.setVisible(false));
+    continueBtn.on('pointerdown', () => {
+      this.setVisible(false);
+      EventBus.emit(Events.NEXT_WAVE_REQUESTED, {});
+    });
 
     this.add([bg, this.titleText, this.goldText, continueBtn, continueText]);
     scene.add.existing(this);

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { BaseEnemy } from './BaseEnemy';
+import { UNIT_SPRITES } from '../../core/AssetManifest';
 import type { IEnemyDef } from '../../types/EnemyTypes';
 
 export class FastEnemy extends BaseEnemy {
@@ -7,19 +8,13 @@ export class FastEnemy extends BaseEnemy {
     scene: Phaser.Scene,
     instanceId: string,
     def: IEnemyDef,
-    curve: Phaser.Curves.Path
+    curve: Phaser.Curves.Path,
+    roadHalfWidthPx = 0
   ) {
-    super(scene, instanceId, def, curve);
+    super(scene, instanceId, def, curve, roadHalfWidthPx);
 
-    // Scout: slim, elongated arrowhead — low-profile to hint at speed
-    //   tip at (11, 0), back corners at (-5, ±4), tail fins at (-7, ±5)
-    const g = this.bodyGfx;
-    g.fillStyle(0xeecc00, 1);
-    g.fillTriangle(11, 0, -5, -4, -5, 4);
-    // small wing fins for "speedy" look
-    g.fillTriangle(-5, -4, -7, -6, -3, -2);
-    g.fillTriangle(-5,  4, -7,  6, -3,  2);
-    g.lineStyle(1, 0xffee88, 0.75);
-    g.strokeTriangle(11, 0, -5, -4, -5, 4);
+    this.bodySprite = scene.add.sprite(0, 0, UNIT_SPRITES.WOLF)
+      .setFrame(2).setDisplaySize(40, 40).setDepth(21);
+    this.setupWalkAnim(UNIT_SPRITES.WOLF);
   }
 }

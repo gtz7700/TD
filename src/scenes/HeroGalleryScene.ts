@@ -3,7 +3,7 @@
 import Phaser from 'phaser';
 import { BackButton } from '../ui/BackButton';
 import { SaveManager } from '../core/SaveManager';
-import { DATA_KEYS } from '../core/AssetManifest';
+import { DATA_KEYS, UNIT_SPRITES } from '../core/AssetManifest';
 import { EventBus } from '../core/EventBus';
 import { Events } from '../types/EventTypes';
 import type { IHeroDef } from '../types/UnitTypes';
@@ -64,7 +64,16 @@ export class HeroGalleryScene extends Phaser.Scene {
     const card = this.add.rectangle(x, y, 340, 130, color)
       .setStrokeStyle(2, unlocked ? 0x4488cc : 0x444444);
 
-    this.add.text(x, y - 30, hero.name, {
+    const spriteKey = hero.id === 'warrior'    ? UNIT_SPRITES.WARRIOR
+      : hero.id === 'archer_hero'              ? UNIT_SPRITES.ARCHER_HERO
+      : undefined;
+
+    if (spriteKey) {
+      this.add.sprite(x - 130, y, spriteKey)
+        .setFrame(0).setDisplaySize(80, 80).setOrigin(0.5).setAlpha(unlocked ? 1 : 0.4);
+    }
+
+    this.add.text(spriteKey ? x + 10 : x, y - 30, hero.name, {
       fontSize: '20px', color: unlocked ? '#ffffff' : '#666666',
     }).setOrigin(0.5);
 
