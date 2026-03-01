@@ -5,7 +5,7 @@ import { EventBus } from '../core/EventBus';
 import { Events } from '../types/EventTypes';
 import { SaveManager } from '../core/SaveManager';
 import { DATA_KEYS, UNIT_SPRITES } from '../core/AssetManifest';
-import type { ITowerDef, IHeroDef } from '../types/UnitTypes';
+import type { IHeroDef } from '../types/UnitTypes';
 
 export const TRAY_HEIGHT = 90;
 
@@ -45,26 +45,18 @@ export class UnitTray {
     panelBg.lineTo(width, height - TRAY_HEIGHT);
     panelBg.strokePath();
 
-    // ─── איסוף יחידות ──────────────────────────────────────────────────────────
-    const towerData = scene.cache.json.get(DATA_KEYS.TOWERS) as { towers: ITowerDef[] };
-    towerData.towers.forEach(def => {
-      this.units.push({
-        id: def.id, name: def.name, unitType: 'tower',
-        cost: def.cost, costType: 'gold',
-        elementColor: ELEMENT_COLORS[def.element] ?? 0x777777,
-      });
-    });
-
+    // ─── איסוף יחידות (גיבורים בלבד — מגדלים הוסרו מהמגש) ────────────────────
     const progress = SaveManager.getProgress();
     const heroData = scene.cache.json.get(DATA_KEYS.HEROES) as { heroes: IHeroDef[] };
     heroData.heroes.forEach(def => {
       if (progress.heroGalleryUnlocks[def.id]) {
         const spriteKey = def.id === 'warrior'    ? UNIT_SPRITES.WARRIOR
           : def.id === 'archer_hero'               ? UNIT_SPRITES.ARCHER_HERO
+          : def.id === 'ice_wizard'                ? UNIT_SPRITES.ICE_WIZARD
           : undefined;
         this.units.push({
           id: def.id, name: def.name, unitType: 'hero',
-          cost: 0, costType: 'gems',  // deploy is free once unlocked in HeroGallery
+          cost: 0, costType: 'gems',
           elementColor: 0x888888,
           spriteKey,
         });
@@ -89,7 +81,7 @@ export class UnitTray {
 
       // צבע אלמנט — frame 0 (idle-FRONT) לגיבורים, מלבן צבעוני למגדלים
       const colorBlock = unit.spriteKey
-        ? scene.add.sprite(cardW / 2, 22, unit.spriteKey).setFrame(0).setDisplaySize(50, 40).setOrigin(0.5)
+        ? scene.add.sprite(cardW / 2, 22, unit.spriteKey).setFrame(2).setDisplaySize(54, 44).setOrigin(0.5)
         : scene.add.rectangle(cardW / 2, 22, 50, 30, unit.elementColor);
 
       // שם יחידה

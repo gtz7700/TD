@@ -16,7 +16,7 @@ export class WarriorHero extends BaseHero {
   ) {
     super(scene, instanceId, def, x, y, 0x8b0000);
     this.bodySprite = scene.add.sprite(x, y, UNIT_SPRITES.WARRIOR)
-      .setFrame(0).setDisplaySize(48, 48).setDepth(18);
+      .setFrame(2).setDisplaySize(48, 48).setDepth(10 + y * 0.05);
   }
 
   // יכולת Cleave - נזק AOE קרוב מסביב לגיבור

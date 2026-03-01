@@ -106,8 +106,8 @@ export class PreloaderScene extends Phaser.Scene {
     this.load.start();
   }
 
-  // הסרת רקע לבן/אפור מספרייטשיט — מאפשר עיבוד pixel-level לאחר הטעינה
-  // עובד על ידי יצירת Canvas, שינוי פיקסלים בהירים לשקופים, והחלפת הטקסטורה
+  // הסרת רקע מספרייטשיט — זיהוי דינמי של צבע הרקע מפיקסל הפינה + הסרה עם סבילות
+  // מזהה את הצבע בפיקסל (0,0) ומסיר פיקסלים דומים לו בכל הטקסטורה
   private makeTransparent(key: string, fw: number, fh: number): void {
     const texture = this.textures.get(key);
     if (!texture) return;
@@ -118,9 +118,19 @@ export class PreloaderScene extends Phaser.Scene {
     ctx.drawImage(src.image as HTMLImageElement, 0, 0);
     const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const d = id.data;
+
+    // זיהוי צבע רקע מפיקסל פינה — מניחים שפינה אינה חלק מדמות
+    const bgR = d[0], bgG = d[1], bgB = d[2];
+    const TOLERANCE = 30;
+
     for (let i = 0; i < d.length; i += 4) {
-      if (d[i] > 200 && d[i + 1] > 200 && d[i + 2] > 200) d[i + 3] = 0;
+      if (d[i + 3] === 0) continue; // כבר שקוף
+      const dr = Math.abs(d[i]   - bgR);
+      const dg = Math.abs(d[i+1] - bgG);
+      const db = Math.abs(d[i+2] - bgB);
+      if (dr < TOLERANCE && dg < TOLERANCE && db < TOLERANCE) d[i + 3] = 0;
     }
+
     ctx.putImageData(id, 0, 0);
     this.textures.remove(key);
     // Phaser's JS runtime accepts HTMLCanvasElement; cast needed for TS types

@@ -27,7 +27,7 @@ export abstract class BaseTower extends Phaser.GameObjects.Rectangle {
     color: number
   ) {
     super(scene, x, y, def.hitboxWidth, def.hitboxHeight, color);
-    this.setDepth(15);
+    this.setDepth(15).setAlpha(0); // hitbox invisible — white dot provides visual
     scene.add.existing(this);
 
     this.instanceId         = instanceId;

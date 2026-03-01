@@ -11,10 +11,8 @@ import { EnemyHealthBar } from '../../ui/EnemyHealthBar';
 import type { IEnemyDef } from '../../types/EnemyTypes';
 import type { IStatusEffect } from '../../types/CombatTypes';
 
-// קצב שינוי הסטייה הצדדית (פיקסלים לשניה) — קובע מהירות הנדנוד האורגני
-const DRIFT_SPEED_PX_PER_S = 8;
-// מגבלת הסטייה המקסימלית מהאופסט הראשוני (פיקסלים) — תנועה עדינה ולא יציאה מהדרך
-const MAX_DRIFT_PX = 4;
+// מגבלת הסטייה הסינוסואידלית (פיקסלים) — נדנוד חלק ולא זיג-זג
+const MAX_DRIFT_PX = 3;
 
 export abstract class BaseEnemy extends Phaser.GameObjects.Rectangle {
   readonly instanceId: string;
@@ -46,7 +44,8 @@ export abstract class BaseEnemy extends Phaser.GameObjects.Rectangle {
 
   // אופסט קבוע לכיוון ניצב למסלול — נקבע אקראית בעת ספאון בגבולות רוחב הדרך
   private readonly lateralOffset: number;
-  // סטייה איטית נוספת מעל האופסט הראשוני — יוצרת תנועה אורגנית ומתנדנדת
+  // פאזה סינוסואידלית — נדנוד חלק ואורגני ללא זיג-זג מפגר בין פריימים
+  private driftPhase = Math.random() * Math.PI * 2;
   private lateralDrift = 0;
 
   constructor(
@@ -89,13 +88,9 @@ export abstract class BaseEnemy extends Phaser.GameObjects.Rectangle {
     const tangent = this.curve.getTangent(t);
     const angle   = Math.atan2(tangent.y, tangent.x);
 
-    // עדכון הסטייה האיטית — random walk מוגבל בטווח MAX_DRIFT_PX
-    const driftDelta = (Math.random() - 0.5) * DRIFT_SPEED_PX_PER_S * (delta / 1000);
-    this.lateralDrift = Phaser.Math.Clamp(
-      this.lateralDrift + driftDelta,
-      -MAX_DRIFT_PX,
-      MAX_DRIFT_PX
-    );
+    // נדנוד סינוסואידלי חלק — מחזור כ-8 שניות, ללא זיג-זג מעצבן בין פריימים
+    this.driftPhase += delta * 0.00078; // 2π / ~8000ms
+    this.lateralDrift = Math.sin(this.driftPhase) * MAX_DRIFT_PX;
 
     // וקטור ניצב לכיוון התנועה (סיבוב 90° של הטנגנט)
     const perpX = -tangent.y;
@@ -125,7 +120,9 @@ export abstract class BaseEnemy extends Phaser.GameObjects.Rectangle {
 
     this.setPosition(pos.x, pos.y);
     this.bodySprite.setPosition(pos.x, pos.y); // ללא setRotation — הכיוון מנוהל ע"י frames
+    this.bodySprite.setDepth(10 + pos.y * 0.05); // y-sort: דמויות נמוכות יותר מוצגות מעל
     this.healthBar.setPosition(pos.x, pos.y);
+    this.healthBar.update(this.currentHP, this.def.maxHP, this.currentShield, this.def.maxShield);
 
     if (t >= 1) {
       this.exitReached = true;
@@ -164,6 +161,14 @@ export abstract class BaseEnemy extends Phaser.GameObjects.Rectangle {
       }
     }
     this.bodySprite.play(`${textureKey}_walk_1`); // מתחיל פניה ימינה
+  }
+
+  // הבהוב לבן קצר כשהאויב לוקח פגיעה — מחוץ לבקרת ה-update
+  onHit(): void {
+    this.bodySprite.setTint(0xffffff);
+    this.scene.time.delayedCall(120, () => {
+      if (this.bodySprite.active) this.bodySprite.clearTint();
+    });
   }
 
   addStatusEffect(effect: IStatusEffect): void {

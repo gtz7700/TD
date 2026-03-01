@@ -8,6 +8,7 @@ import { ArrowProjectile } from '../entities/projectiles/ArrowProjectile';
 import { MageOrb } from '../entities/projectiles/MageOrb';
 import { CatapultBoulder } from '../entities/projectiles/CatapultBoulder';
 import type { ITowerDef } from '../types/UnitTypes';
+import type { BaseEnemy } from '../entities/enemies/BaseEnemy';
 
 export class ProjectileManager {
   private readonly scene: Phaser.Scene;
@@ -47,6 +48,17 @@ export class ProjectileManager {
       }
     }
 
+    this.active.add(proj);
+  }
+
+  // ירי גיבור — חץ עוקב עם נזק ישיר (ללא def מגדל)
+  spawnHeroArrow(
+    sourceInstanceId: string,
+    fromX: number, fromY: number,
+    target: BaseEnemy,
+    damage: number
+  ): void {
+    const proj = new ArrowProjectile(this.scene, fromX, fromY, target, damage, 'Physical', sourceInstanceId);
     this.active.add(proj);
   }
 

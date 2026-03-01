@@ -2,8 +2,8 @@
   "heroes": [
     {
       "id": "warrior",
-      "name": "Iron Warrior",
-      "spriteKey": "hero_warrior",
+      "name": "Thunder Wiz",
+      "spriteKey": "unit_warrior",
       "hitboxWidth": 32,
       "hitboxHeight": 32,
       "canPlaceOnPath": true,
@@ -15,14 +15,26 @@
     {
       "id": "archer_hero",
       "name": "Swift Archer",
-      "spriteKey": "hero_archer",
+      "spriteKey": "unit_archer_hero",
       "hitboxWidth": 32,
       "hitboxHeight": 32,
       "canPlaceOnPath": false,
       "baseHP": 150,
       "baseDamage": 55,
       "abilityId": "rapid_shot",
-      "unlockCostGems": 50
+      "unlockCostGems": 0
+    },
+    {
+      "id": "ice_wizard",
+      "name": "Ice Wizard",
+      "spriteKey": "unit_ice_wizard",
+      "hitboxWidth": 32,
+      "hitboxHeight": 32,
+      "canPlaceOnPath": false,
+      "baseHP": 200,
+      "baseDamage": 30,
+      "abilityId": "freeze_nova",
+      "unlockCostGems": 0
     }
   ]
 }

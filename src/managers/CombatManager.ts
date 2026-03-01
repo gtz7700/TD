@@ -33,6 +33,7 @@ export class CombatManager {
     // עדכון ערכי האויב
     enemy.currentShield -= shieldAbsorbed;
     enemy.currentHP -= hpDamaged;
+    if (hpDamaged > 0 || shieldAbsorbed > 0) enemy.onHit(); // הבהוב חזותי על פגיעה
 
     // החלת אפקט סטטוס אלמנטלי
     const statusEffect = getStatusEffect(event.element);

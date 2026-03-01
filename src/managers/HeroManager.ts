@@ -7,6 +7,7 @@ import { CombatManager } from './CombatManager';
 import { BaseHero } from '../entities/heroes/BaseHero';
 import { WarriorHero } from '../entities/heroes/WarriorHero';
 import { ArcherHero } from '../entities/heroes/ArcherHero';
+import { IceWizardHero } from '../entities/heroes/IceWizardHero';
 import { DATA_KEYS } from '../core/AssetManifest';
 import type { IHeroDef } from '../types/UnitTypes';
 
@@ -40,7 +41,8 @@ export class HeroManager {
 
     let hero: BaseHero;
     switch (heroId) {
-      case 'archer_hero': hero = new ArcherHero(this.scene, instanceId, def, x, y); break;
+      case 'archer_hero': hero = new ArcherHero(this.scene, instanceId, def, x, y);    break;
+      case 'ice_wizard':  hero = new IceWizardHero(this.scene, instanceId, def, x, y); break;
       default:            hero = new WarriorHero(this.scene, instanceId, def, x, y);
     }
 
